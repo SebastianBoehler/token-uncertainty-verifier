@@ -31,16 +31,17 @@ TOKEN_HEADERS = [
 ]
 
 DEFAULT_PROMPT = (
-    "List three specific legal precedents from 1897 and explain their holdings "
+    "List three specific scientific or historical claims with dates and sources "
     "in one sentence each."
 )
 
 DEFAULT_TEXT = (
-    "Roe v. Wade, 410 U.S. 113, was decided in 1973. "
-    "Roe v. Wade, 410 U.S. 999, was decided in 1873. "
-    "The German Federal Constitutional Court decided Smith v. Berlin under "
-    "Section 14 of the AI Liability Act in 2024. "
-    "The court discussed privacy and procedure."
+    "Apollo 11 landed on the Moon in 1969. "
+    "Apollo 11 landed on the Moon in 1972. "
+    "The Eiffel Tower opened in 1889. "
+    "The Eiffel Tower opened in 1899. "
+    "Project Atlas released build ATLAS-42 in report 14. "
+    "The summary discussed product quality and user feedback."
 )
 
 
@@ -89,7 +90,7 @@ def create_demo() -> gr.Blocks:
     with gr.Blocks(title="Token Uncertainty Verifier") as demo:
         gr.Markdown(
             "# Token Uncertainty Verifier\n"
-            "Token-level uncertainty plus claim-risk triage for legal and factual answers."
+            "Token-level uncertainty plus claim-risk triage for factual answers."
         )
 
         with gr.Row():

@@ -6,89 +6,53 @@ from collections import defaultdict
 
 from token_uncertainty.types import AnalysisResult, SentenceRisk, TokenScore
 
-LEGAL_TERMS = {
-    "act",
-    "appeal",
-    "article",
-    "case",
-    "claim",
-    "clause",
-    "code",
-    "contract",
-    "court",
-    "damages",
-    "decision",
-    "directive",
-    "doctrine",
-    "holding",
-    "judgment",
-    "liability",
-    "plaintiff",
-    "precedent",
-    "regulation",
-    "rule",
-    "section",
-    "statute",
-    "treaty",
+CLAIM_TERMS = {
+    "announced", "born", "built", "claim", "created", "died", "discovered", "founded",
+    "invented", "landed", "launched", "located", "opened", "published", "released",
+    "reported", "won",
 }
 
-ENTITY_STOPWORDS = {
-    "A",
-    "An",
-    "As",
-    "At",
-    "In",
-    "It",
-    "On",
-    "That",
-    "The",
-    "This",
-}
+ENTITY_STOPWORDS = {"A", "An", "As", "At", "In", "It", "On", "That", "The", "This"}
 
 DATE_PATTERN = re.compile(r"\b(?:1[5-9]\d{2}|20\d{2})\b")
 NUMBER_PATTERN = re.compile(r"\b\d+(?:\.\d+)?%?\b")
-CITATION_PATTERN = re.compile(r"\b\d+\s+[A-Z][A-Za-z.]*\s+\d+\b")
-SECTION_PATTERN = re.compile(r"(?:\bsection\b|\bsec\.\b|[\u00a7])\s*\d+", re.I)
-CASE_NAME_PATTERN = re.compile(
-    r"\b[A-Z][A-Za-z]+ v\. [A-Z][A-Za-z]+"
-    r"(?:(?:\s+(?:of|the|and|&)\s+[A-Z][A-Za-z]+)|(?:\s+[A-Z][A-Za-z]+))*\b"
+REFERENCE_PATTERN = re.compile(r"\b(?:chapter|figure|fig\.|page|report|ref\.|table)\s*\d+\b", re.I)
+IDENTIFIER_PATTERN = re.compile(r"\b[A-Z]{2,}[A-Z0-9-]*-\d+\b")
+NAMED_ENTITY_PATTERN = re.compile(
+    r"\b[A-Z][A-Za-z0-9-]{2,}(?:\s+(?:[A-Z][A-Za-z0-9-]{2,}|\d+))*\b"
 )
-NAMED_ENTITY_PATTERN = re.compile(r"\b[A-Z][A-Za-z]{2,}(?:\s+[A-Z][A-Za-z]{2,})*\b")
 
 CLAIM_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("date", DATE_PATTERN),
     ("number", NUMBER_PATTERN),
-    ("citation", CITATION_PATTERN),
-    ("section", SECTION_PATTERN),
-    ("case-name", CASE_NAME_PATTERN),
+    ("reference", REFERENCE_PATTERN),
+    ("identifier", IDENTIFIER_PATTERN),
     ("named-entity", NAMED_ENTITY_PATTERN),
 )
 
 CUE_WEIGHTS = {
     "conflict": 1.0,
-    "case-name": 0.95,
-    "citation": 0.95,
+    "identifier": 0.9,
     "date": 0.9,
-    "section": 0.9,
+    "reference": 0.85,
     "number": 0.75,
     "named-entity": 0.65,
-    "legal-term": 0.22,
+    "claim-term": 0.25,
 }
 
 NON_TERMINAL_SUFFIXES = (
-    " v.",
-    " U.S.",
-    " U.K.",
-    " Art.",
-    " No.",
-    " Sec.",
-    " Inc.",
-    " Ltd.",
-    " Co.",
-    " Dr.",
-    " Mr.",
-    " Ms.",
-    " Prof.",
+    "U.S.",
+    "U.K.",
+    "No.",
+    "Inc.",
+    "Ltd.",
+    "Co.",
+    "Dr.",
+    "Mr.",
+    "Ms.",
+    "Prof.",
+    "Fig.",
+    "Ref.",
 )
 
 
@@ -118,6 +82,17 @@ def is_ignored_named_entity(text: str) -> bool:
     return len(words) == 1 and words[0] in ENTITY_STOPWORDS
 
 
+def normalized_subject(text: str) -> str:
+    words = re.sub(r"\s+", " ", text).strip().split()
+    while words and words[0] in ENTITY_STOPWORDS:
+        words.pop(0)
+    return " ".join(words).lower()
+
+
+def spans_overlap(first: tuple[int, int], second: tuple[int, int]) -> bool:
+    return first[0] < second[1] and first[1] > second[0]
+
+
 def iter_claim_matches(text: str):
     for name, pattern in CLAIM_PATTERNS:
         for match in pattern.finditer(text):
@@ -126,44 +101,49 @@ def iter_claim_matches(text: str):
             yield name, match
 
 
-def normalized_case_name(text: str) -> str:
-    return re.sub(r"\s+", " ", text).strip().lower()
+def find_conflict_spans(sentence_spans: list[tuple[int, int, str]]) -> list[tuple[int, int]]:
+    observed: dict[tuple[str, str], dict[str, list[tuple[int, int, int]]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
 
-
-def find_conflict_spans(text: str, sentence_spans: list[tuple[int, int, str]]) -> list[tuple[int, int]]:
-    observed: dict[tuple[str, str], dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
-
-    for start, _, sentence in sentence_spans:
-        case_match = CASE_NAME_PATTERN.search(sentence)
-        if not case_match:
+    for sentence_index, (start, _, sentence) in enumerate(sentence_spans):
+        subject_match = NAMED_ENTITY_PATTERN.search(sentence)
+        if not subject_match:
             continue
-        case_name = normalized_case_name(case_match.group(0))
+        subject = normalized_subject(subject_match.group(0))
+        if not subject:
+            continue
 
-        citation_match = CITATION_PATTERN.search(sentence)
-        if citation_match:
-            observed[(case_name, "citation")][citation_match.group(0)].append(
-                (start + citation_match.start(), start + citation_match.end())
+        date_spans = [match.span() for match in DATE_PATTERN.finditer(sentence)]
+        for date_match in DATE_PATTERN.finditer(sentence):
+            observed[(subject, "date")][date_match.group(0)].append(
+                (start + date_match.start(), start + date_match.end(), sentence_index)
             )
 
-        date_match = DATE_PATTERN.search(sentence)
-        if date_match:
-            observed[(case_name, "date")][date_match.group(0)].append(
-                (start + date_match.start(), start + date_match.end())
+        subject_span = subject_match.span()
+        ignored_number_spans = [subject_span, *date_spans]
+        for number_match in NUMBER_PATTERN.finditer(sentence):
+            span = number_match.span()
+            if any(spans_overlap(span, ignored) for ignored in ignored_number_spans):
+                continue
+            observed[(subject, "number")][number_match.group(0)].append(
+                (start + number_match.start(), start + number_match.end(), sentence_index)
             )
 
     conflict_spans: list[tuple[int, int]] = []
     for values in observed.values():
-        if len(values) > 1:
+        sentence_ids = {sentence_index for spans in values.values() for _, _, sentence_index in spans}
+        if len(values) > 1 and len(sentence_ids) > 1:
             for spans in values.values():
-                conflict_spans.extend(spans)
+                conflict_spans.extend((start, end) for start, end, _ in spans)
     return conflict_spans
 
 
 def claim_cues_for_text(text: str) -> tuple[str, ...]:
     cues = {name for name, _ in iter_claim_matches(text)}
     words = {word.lower().strip(".,:;()[]") for word in text.split()}
-    if words & LEGAL_TERMS:
-        cues.add("legal-term")
+    if words & CLAIM_TERMS:
+        cues.add("claim-term")
     return tuple(sorted(cues))
 
 
@@ -190,8 +170,8 @@ def claim_cues_by_token(
     for index, (token_start, token_end) in enumerate(spans):
         token_text = text[token_start:token_end]
         words = {word.lower().strip(".,:;()[]") for word in token_text.split()}
-        if words & LEGAL_TERMS:
-            token_cues[index].add("legal-term")
+        if words & CLAIM_TERMS:
+            token_cues[index].add("claim-term")
 
     return tuple(tuple(sorted(cues)) for cues in token_cues)
 
@@ -255,7 +235,7 @@ def analyze_scored_tokens(tokens: list[TokenScore]) -> AnalysisResult:
     text, token_spans = assign_sentence_indexes(tokens)
     sentence_spans = split_sentence_spans(text)
     sentence_cues = [claim_cues_for_text(sentence) for _, _, sentence in sentence_spans]
-    conflict_spans = find_conflict_spans(text, sentence_spans)
+    conflict_spans = find_conflict_spans(sentence_spans)
     token_cues = claim_cues_by_token(text, token_spans, conflict_spans)
 
     for index, token in enumerate(tokens):

@@ -23,21 +23,22 @@ from token_uncertainty.rendering import (
     token_rows,
 )
 
-SAMPLE_CONTEXT = "Assess this legal answer for statements that deserve verification."
+SAMPLE_CONTEXT = "Assess this answer for statements that deserve verification."
 SAMPLE_TEXT = (
-    "Roe v. Wade, 410 U.S. 113, was decided in 1973. "
-    "Roe v. Wade, 410 U.S. 999, was decided in 1873. "
-    "Brown v. Board of Education was decided in 1954. "
-    "Brown v. Board of Education was decided in 1999. "
-    "The German Federal Constitutional Court decided Smith v. Berlin under "
-    "Section 14 of the AI Liability Act in 2024. "
-    "The court discussed privacy and procedure."
+    "Apollo 11 landed on the Moon in 1969. "
+    "Apollo 11 landed on the Moon in 1972. "
+    "The Eiffel Tower opened in 1889. "
+    "The Eiffel Tower opened in 1899. "
+    "OpenAI released GPT-4 in 2023. "
+    "OpenAI released GPT-4 in 2021. "
+    "Project Atlas released build ATLAS-42 in report 14. "
+    "The summary discussed product quality and user feedback."
 )
 
 
 def write_csv(path: Path, headers: list[str], rows: list[list[object]]) -> None:
     with path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, lineterminator="\n")
         writer.writerow(headers)
         writer.writerows(rows)
 

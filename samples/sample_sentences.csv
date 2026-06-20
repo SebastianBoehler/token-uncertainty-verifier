@@ -1,7 +1,9 @@
 sentence,text,factual_risk,mean_uncertainty,max_token_risk,claim_cues
-1,"Roe v. Wade, 410 U.S. 113, was decided in 1973.",0.9875,0.99998,1.0,"case-name, citation, date, named-entity, number"
-2,"Roe v. Wade, 410 U.S. 999, was decided in 1873.",0.9875,0.99998,1.0,"case-name, citation, date, named-entity, number"
-3,Brown v. Board of Education was decided in 1954.,0.9875,0.99998,1.0,"case-name, date, named-entity, number"
-4,Brown v. Board of Education was decided in 1999.,0.98749,0.99998,1.0,"case-name, date, named-entity, number"
-5,The German Federal Constitutional Court decided Smith v. Berlin under Section 14 of the AI Liability Act in 2024.,0.96687,0.99998,0.9625,"case-name, date, legal-term, named-entity, number, section"
-6,The court discussed privacy and procedure.,0.48324,0.99998,0.41499,legal-term
+1,Apollo 11 landed on the Moon in 1969.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
+2,Apollo 11 landed on the Moon in 1972.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
+3,The Eiffel Tower opened in 1889.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
+4,The Eiffel Tower opened in 1899.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
+5,OpenAI released GPT-4 in 2023.,0.97499,0.99998,1.0,"claim-term, date, identifier, named-entity, number"
+6,OpenAI released GPT-4 in 2021.,0.975,0.99998,1.0,"claim-term, date, identifier, named-entity, number"
+7,Project Atlas released build ATLAS-42 in report 14.,0.93374,0.99998,0.925,"claim-term, identifier, named-entity, number, reference"
+8,The summary discussed product quality and user feedback.,0.266,0.99998,0.12,

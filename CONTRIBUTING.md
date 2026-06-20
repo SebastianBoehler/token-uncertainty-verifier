@@ -27,7 +27,7 @@ TOKEN_UV_DEVICE=cpu python scripts/generate_samples.py --model-id sshleifer/tiny
 - Keep source files small and focused. Avoid files over roughly 300 lines.
 - Keep risk scoring honest: uncertainty and factual correctness are separate signals.
 - Do not add mock verification or fake source evidence.
-- Prefer narrow tests for scoring, rendering, and legal-text edge cases.
+- Prefer narrow tests for scoring, rendering, and claim-parsing edge cases.
 - Keep Hugging Face Space metadata in `README.md` intact.
 
 ## Pull Requests

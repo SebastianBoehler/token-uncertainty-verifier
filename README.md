@@ -29,7 +29,7 @@ The project is designed for fast demos, hackathons, and early research workflows
 The app exposes two layers:
 
 - **Token uncertainty**: chosen-token probability, normalized entropy, rank, and margin from a causal language model.
-- **Factual-risk triage**: local claim cues such as dates, citations, case names, legal sections, numbers, named entities, and repeated-claim conflicts.
+- **Factual-risk triage**: local claim cues such as dates, references, identifiers, numbers, named entities, claim-heavy verbs, and repeated-claim conflicts.
 
 The most useful mode is pasted-text analysis. You can paste an answer from another model and use a local model to score where the text looks claim-heavy, unstable, or internally inconsistent.
 
@@ -44,7 +44,7 @@ Current risk scores are triage signals. They answer: “Which exact tokens shoul
 - Gradio UI with generation and pasted-text analysis modes.
 - Token overlay with hover tooltips for probability, uncertainty, risk, rank, margin, and cues.
 - Sentence-level summary table for scanning high-risk statements.
-- Conflict flags for repeated case claims with inconsistent dates or citations.
+- Conflict flags for repeated subject claims with inconsistent dates or numbers.
 - Sample report generator for reproducible screenshots and CSV artifacts.
 - GitHub Actions CI for tests and smoke checks.
 
@@ -83,7 +83,7 @@ This writes:
 - `samples/sample_tokens.csv`
 - `samples/sample_sentences.csv`
 
-The sample text intentionally includes contradictory legal variants so the overlay has clear token-level flags.
+The sample text intentionally includes contradictory factual variants so the overlay has clear token-level flags.
 
 ## Development
 

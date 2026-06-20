@@ -13,7 +13,7 @@ def test_token_rows_keep_numeric_scores():
     rows = token_rows(
         [
             TokenScore(
-                text="court",
+                text="token",
                 probability=0.123456,
                 uncertainty=0.4,
                 factual_risk=0.5,
