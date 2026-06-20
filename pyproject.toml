@@ -1,0 +1,22 @@
+[project]
+name = "token-uncertainty-verifier"
+version = "0.1.0"
+description = "Token-level uncertainty and factual-risk overlays for LLM outputs."
+requires-python = ">=3.10"
+dependencies = [
+  "accelerate>=0.30",
+  "gradio>=5.0",
+  "numpy>=1.26",
+  "protobuf>=4.25",
+  "safetensors>=0.4",
+  "sentencepiece>=0.2",
+  "torch>=2.2",
+  "transformers>=4.46",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
