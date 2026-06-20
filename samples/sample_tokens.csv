@@ -1,47 +1,88 @@
 #,token,probability,uncertainty,factual_risk,rank,margin,claim_cues
-1,The,2e-05,0.99998,0.99999,43560,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-2, Supreme,2e-05,0.99999,0.99999,23059,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-3, Court,2e-05,0.99998,0.99999,18191,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-4, decided,2e-05,0.99998,0.99999,5035,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-5, Roe,2e-05,0.99999,0.99999,39398,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-6, v,2e-05,0.99998,0.99999,28846,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-7,.,2e-05,0.99999,0.99999,45895,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-8, Wade,2e-05,0.99998,0.99999,10092,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-9,",",2e-05,0.99998,0.99999,18468,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-10, 410,2e-05,0.99998,0.99999,18086,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-11, U,2e-05,0.99998,0.99999,20833,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-12,.,2e-05,0.99998,0.99999,4363,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-13,S,2e-05,0.99998,0.99999,47623,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-14,.,2e-05,0.99998,0.99999,45895,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-15, 113,2e-05,0.99998,0.99999,13961,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-16,",",2e-05,0.99998,0.99999,18468,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-17, in,2e-05,0.99998,0.99999,16331,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-18, 1973,2e-05,0.99998,0.99999,1152,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-19, and,2e-05,0.99998,0.99999,35646,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-20, addressed,2e-05,0.99999,0.99999,48346,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-21, abortion,2e-05,0.99998,0.99999,40258,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-22, privacy,2e-05,0.99998,0.99999,21967,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-23,.,2e-05,0.99998,0.99999,45895,-0.0,"case-name, citation, date, legal-term, named-entity, number"
-24, In,2e-05,0.99998,0.99999,35748,-0.0,"case-name, date, legal-term, named-entity, number, section"
-25, 2024,2e-05,0.99998,0.99999,17656,-0.0,"case-name, date, legal-term, named-entity, number, section"
-26,",",2e-05,0.99998,0.99999,31790,-0.0,"case-name, date, legal-term, named-entity, number, section"
-27, the,2e-05,0.99998,0.99999,50103,-0.0,"case-name, date, legal-term, named-entity, number, section"
-28, German,2e-05,0.99998,0.99999,3131,-0.0,"case-name, date, legal-term, named-entity, number, section"
-29, Federal,2e-05,0.99998,0.99999,5755,-0.0,"case-name, date, legal-term, named-entity, number, section"
-30, Constitutional,2e-05,0.99998,0.99999,14791,-0.0,"case-name, date, legal-term, named-entity, number, section"
-31, Court,2e-05,0.99998,0.99999,18191,-0.0,"case-name, date, legal-term, named-entity, number, section"
-32, decided,2e-05,0.99998,0.99999,45223,-0.0,"case-name, date, legal-term, named-entity, number, section"
-33, Smith,2e-05,0.99998,0.99999,8777,-0.0,"case-name, date, legal-term, named-entity, number, section"
-34, v,2e-05,0.99998,0.99999,28846,-0.0,"case-name, date, legal-term, named-entity, number, section"
-35,.,2e-05,0.99999,0.99999,45895,-0.0,"case-name, date, legal-term, named-entity, number, section"
-36, Berlin,2e-05,0.99998,0.99999,5481,-0.0,"case-name, date, legal-term, named-entity, number, section"
-37, under,2e-05,0.99998,0.99999,39865,-0.0,"case-name, date, legal-term, named-entity, number, section"
-38, Section,2e-05,0.99998,0.99999,8552,-0.0,"case-name, date, legal-term, named-entity, number, section"
-39, 14,2e-05,0.99999,0.99999,33284,-0.0,"case-name, date, legal-term, named-entity, number, section"
-40, of,2e-05,0.99998,0.99999,15725,-0.0,"case-name, date, legal-term, named-entity, number, section"
-41, the,2e-05,0.99998,0.99999,50103,-0.0,"case-name, date, legal-term, named-entity, number, section"
-42, AI,2e-05,0.99998,0.99999,34728,-0.0,"case-name, date, legal-term, named-entity, number, section"
-43, Li,2e-05,0.99998,0.99999,10762,-0.0,"case-name, date, legal-term, named-entity, number, section"
-44,ability,2e-05,0.99999,0.99999,1795,-0.0,"case-name, date, legal-term, named-entity, number, section"
-45, Act,2e-05,0.99998,0.99999,16190,-0.0,"case-name, date, legal-term, named-entity, number, section"
-46,.,2e-05,0.99999,0.99999,45895,-0.0,"case-name, date, legal-term, named-entity, number, section"
+1,R,2e-05,0.99998,0.9625,43477,-0.0,"case-name, named-entity"
+2,oe,2e-05,0.99999,0.9625,5378,-0.0,"case-name, named-entity"
+3, v,2e-05,0.99998,0.96249,21412,-0.0,case-name
+4,.,2e-05,0.99998,0.9625,45895,-0.0,case-name
+5, Wade,2e-05,0.99998,0.96249,10092,-0.0,"case-name, named-entity"
+6,",",2e-05,0.99998,0.12,31790,-0.0,
+7, 410,2e-05,0.99999,1.0,32172,-0.0,"citation, conflict, number"
+8, U,2e-05,0.99998,1.0,20833,-0.0,"citation, conflict"
+9,.,2e-05,0.99998,1.0,4363,-0.0,"citation, conflict"
+10,S,2e-05,0.99999,1.0,47623,-0.0,"citation, conflict"
+11,.,2e-05,0.99998,1.0,45895,-0.0,"citation, conflict"
+12, 113,2e-05,0.99998,1.0,36296,-0.0,"citation, conflict, number"
+13,",",2e-05,0.99998,0.12,18468,-0.0,
+14, was,2e-05,0.99998,0.12,25579,-0.0,
+15, decided,2e-05,0.99998,0.12,5035,-0.0,
+16, in,2e-05,0.99998,0.12,16331,-0.0,
+17, 1973,2e-05,0.99998,1.0,1152,-0.0,"conflict, date, number"
+18,.,2e-05,0.99998,0.12,45895,-0.0,
+19, Roe,2e-05,0.99998,0.96249,10860,-0.0,"case-name, named-entity"
+20, v,2e-05,0.99998,0.96249,21412,-0.0,case-name
+21,.,2e-05,0.99999,0.9625,45895,-0.0,case-name
+22, Wade,2e-05,0.99998,0.96249,10092,-0.0,"case-name, named-entity"
+23,",",2e-05,0.99998,0.12,18468,-0.0,
+24, 410,2e-05,0.99998,1.0,32172,-0.0,"citation, conflict, number"
+25, U,2e-05,0.99998,1.0,20833,-0.0,"citation, conflict"
+26,.,2e-05,0.99998,1.0,45895,-0.0,"citation, conflict"
+27,S,2e-05,0.99998,1.0,47623,-0.0,"citation, conflict"
+28,.,2e-05,0.99998,1.0,45895,-0.0,"citation, conflict"
+29, 999,2e-05,0.99998,1.0,48019,-0.0,"citation, conflict, number"
+30,",",2e-05,0.99998,0.12,31790,-0.0,
+31, was,2e-05,0.99998,0.12,24679,-0.0,
+32, decided,2e-05,0.99998,0.12,45223,-0.0,
+33, in,2e-05,0.99998,0.12,16331,-0.0,
+34, 18,2e-05,0.99998,1.0,17837,-0.0,"conflict, date, number"
+35,73,2e-05,0.99999,1.0,4925,-0.0,"conflict, date, number"
+36,.,2e-05,0.99998,0.12,4363,-0.0,
+37, Brown,2e-05,0.99998,0.96249,19001,-0.0,"case-name, named-entity"
+38, v,2e-05,0.99998,0.96249,21412,-0.0,case-name
+39,.,2e-05,0.99998,0.96249,45895,-0.0,case-name
+40, Board,2e-05,0.99998,0.96249,43356,-0.0,"case-name, named-entity"
+41, of,2e-05,0.99998,0.96249,34533,-0.0,case-name
+42, Education,2e-05,0.99998,0.96249,2174,-0.0,"case-name, named-entity"
+43, was,2e-05,0.99998,0.12,24679,-0.0,
+44, decided,2e-05,0.99998,0.12,5035,-0.0,
+45, in,2e-05,0.99998,0.12,16331,-0.0,
+46, 1954,2e-05,0.99999,1.0,23693,-0.0,"conflict, date, number"
+47,.,2e-05,0.99998,0.12,45895,-0.0,
+48, Brown,2e-05,0.99998,0.96249,19001,-0.0,"case-name, named-entity"
+49, v,2e-05,0.99998,0.9625,21412,-0.0,case-name
+50,.,2e-05,0.99997,0.96249,4369,-0.0,case-name
+51, Board,2e-05,0.99999,0.9625,6902,-0.0,"case-name, named-entity"
+52, of,2e-05,0.99998,0.96249,34533,-0.0,case-name
+53, Education,2e-05,0.99998,0.96249,2174,-0.0,"case-name, named-entity"
+54, was,2e-05,0.99998,0.12,24679,-0.0,
+55, decided,2e-05,0.99998,0.12,5035,-0.0,
+56, in,2e-05,0.99998,0.12,16331,-0.0,
+57, 1999,2e-05,0.99998,1.0,10236,-0.0,"conflict, date, number"
+58,.,2e-05,0.99998,0.12,45895,-0.0,
+59, The,2e-05,0.99998,0.12,41002,-0.0,
+60, German,2e-05,0.99998,0.7375,47127,-0.0,named-entity
+61, Federal,2e-05,0.99998,0.73749,5755,-0.0,named-entity
+62, Constitutional,2e-05,0.99998,0.73749,14791,-0.0,named-entity
+63, Court,2e-05,0.99999,0.7375,32067,-0.0,"legal-term, named-entity"
+64, decided,2e-05,0.99998,0.12,5035,-0.0,
+65, Smith,2e-05,0.99998,0.96249,8777,-0.0,"case-name, named-entity"
+66, v,2e-05,0.99998,0.96249,28846,-0.0,case-name
+67,.,2e-05,0.99998,0.9625,45895,-0.0,case-name
+68, Berlin,2e-05,0.99998,0.9625,5481,-0.0,"case-name, named-entity"
+69, under,2e-05,0.99998,0.12,39865,-0.0,
+70, Section,2e-05,0.99998,0.92499,41706,-0.0,"legal-term, named-entity, section"
+71, 14,2e-05,0.99998,0.92499,16974,-0.0,"number, section"
+72, of,2e-05,0.99998,0.12,34533,-0.0,
+73, the,2e-05,0.99998,0.12,50103,-0.0,
+74, AI,2e-05,0.99998,0.12,34728,-0.0,
+75, Li,2e-05,0.99998,0.7375,39496,-0.0,named-entity
+76,ability,2e-05,0.99998,0.7375,48463,-0.0,named-entity
+77, Act,2e-05,0.99998,0.7375,16190,-0.0,"legal-term, named-entity"
+78, in,2e-05,0.99999,0.12,33927,-0.0,
+79, 2024,2e-05,0.99998,0.925,17656,-0.0,"date, number"
+80,.,2e-05,0.99998,0.12,4363,-0.0,
+81, The,2e-05,0.99998,0.12,9255,-0.0,
+82, court,2e-05,0.99998,0.41499,45819,-0.0,legal-term
+83, discussed,2e-05,0.99998,0.12,36952,-0.0,
+84, privacy,2e-05,0.99998,0.12,28291,-0.0,
+85, and,2e-05,0.99998,0.12,35646,-0.0,
+86, procedure,2e-05,0.99998,0.12,26839,-0.0,
+87,.,2e-05,0.99998,0.12,45895,-0.0,

@@ -25,9 +25,13 @@ from token_uncertainty.rendering import (
 
 SAMPLE_CONTEXT = "Assess this legal answer for statements that deserve verification."
 SAMPLE_TEXT = (
-    "The Supreme Court decided Roe v. Wade, 410 U.S. 113, in 1973 and addressed "
-    "abortion privacy. In 2024, the German Federal Constitutional Court decided "
-    "Smith v. Berlin under Section 14 of the AI Liability Act."
+    "Roe v. Wade, 410 U.S. 113, was decided in 1973. "
+    "Roe v. Wade, 410 U.S. 999, was decided in 1873. "
+    "Brown v. Board of Education was decided in 1954. "
+    "Brown v. Board of Education was decided in 1999. "
+    "The German Federal Constitutional Court decided Smith v. Berlin under "
+    "Section 14 of the AI Liability Act in 2024. "
+    "The court discussed privacy and procedure."
 )
 
 

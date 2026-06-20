@@ -36,10 +36,15 @@ def token_title(token: TokenScore) -> str:
 def render_token_overlay(tokens: list[TokenScore], threshold: float = 0.45) -> str:
     spans = []
     for token in tokens:
-        border = "#9b1c1c" if token.factual_risk >= threshold else "transparent"
+        flagged = token.factual_risk >= threshold
+        background = risk_color(token.factual_risk) if flagged else "transparent"
+        border = "#9b1c1c" if flagged else "transparent"
+        weight = "700" if flagged else "400"
+        shadow = "0 0 0 1px rgba(155,28,28,.18)" if flagged else "none"
         spans.append(
             "<span class='uv-token' "
-            f"style='background:{risk_color(token.factual_risk)};border-color:{border}' "
+            f"style='background:{background};border-color:{border};"
+            f"font-weight:{weight};box-shadow:{shadow}' "
             f"title='{escape(token_title(token), quote=True)}'>"
             f"{escape(token.text)}</span>"
         )

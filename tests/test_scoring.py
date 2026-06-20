@@ -26,6 +26,42 @@ def test_low_probability_claim_token_gets_high_risk():
     assert result.sentences[0].factual_risk > 0.5
 
 
+def test_sentence_cues_do_not_color_every_token():
+    result = analyze_scored_tokens(
+        [
+            TokenScore(text="The court decided ", probability=0.8, entropy=0.1, margin=0.2),
+            TokenScore(text="Roe", probability=0.2, entropy=0.7, margin=-0.1),
+            TokenScore(text=" in ", probability=0.8, entropy=0.1, margin=0.2),
+            TokenScore(text="1873", probability=0.2, entropy=0.7, margin=-0.1),
+            TokenScore(text=".", probability=0.8, entropy=0.1, margin=0.2),
+        ]
+    )
+
+    assert result.tokens[0].claim_cues == ("legal-term",)
+    assert result.tokens[2].claim_cues == ()
+    assert result.tokens[2].factual_risk < 0.2
+    assert result.tokens[3].claim_cues == ("date", "number")
+    assert result.tokens[3].factual_risk > 0.7
+
+
+def test_repeated_case_with_conflicting_dates_flags_values():
+    result = analyze_scored_tokens(
+        [
+            TokenScore(text="Roe v. Wade was decided in ", probability=0.8, entropy=0.1, margin=0.2),
+            TokenScore(text="1973", probability=0.8, entropy=0.1, margin=0.2),
+            TokenScore(text=". Roe v. Wade was decided in ", probability=0.8, entropy=0.1, margin=0.2),
+            TokenScore(text="1873", probability=0.8, entropy=0.1, margin=0.2),
+            TokenScore(text=".", probability=0.8, entropy=0.1, margin=0.2),
+        ]
+    )
+
+    conflicted = [token for token in result.tokens if "conflict" in token.claim_cues]
+
+    assert len(conflicted) == 2
+    assert all("date" in token.claim_cues for token in conflicted)
+    assert all(token.factual_risk > 0.9 for token in conflicted)
+
+
 def test_empty_analysis_has_no_sentences():
     result = analyze_scored_tokens([])
 

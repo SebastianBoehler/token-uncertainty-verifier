@@ -36,9 +36,11 @@ DEFAULT_PROMPT = (
 )
 
 DEFAULT_TEXT = (
-    "In 1897, the Supreme Court decided Hawkins v. McGee and held that "
-    "contract damages must equal the promised value. The German Civil Code "
-    "entered into force in 1900."
+    "Roe v. Wade, 410 U.S. 113, was decided in 1973. "
+    "Roe v. Wade, 410 U.S. 999, was decided in 1873. "
+    "The German Federal Constitutional Court decided Smith v. Berlin under "
+    "Section 14 of the AI Liability Act in 2024. "
+    "The court discussed privacy and procedure."
 )
 
 
