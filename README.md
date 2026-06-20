@@ -1,7 +1,7 @@
 ---
 title: Token Uncertainty Verifier
 sdk: gradio
-sdk_version: 5.0.0
+sdk_version: 6.19.0
 app_file: app.py
 license: mit
 python_version: "3.11"
