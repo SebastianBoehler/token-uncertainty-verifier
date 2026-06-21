@@ -14,6 +14,12 @@ from token_uncertainty.model_runner import (
     generate_with_scores,
     score_contrastive_options,
 )
+from token_uncertainty.nli_attribution import (
+    DEFAULT_NLI_MODEL_ID,
+    analyze_nli_attribution,
+    attribution_rows,
+    render_nli_attribution,
+)
 from token_uncertainty.rendering import (
     ComparisonSection,
     grouped_hot_spans,
@@ -123,3 +129,14 @@ def run_contrastive_mode(template: str, options: str, context: str, model_id: st
         model_id=model_id.strip() or DEFAULT_MODEL_ID,
     )
     return render_contrastive_scores(scores, template.strip()), contrastive_rows(scores)
+
+
+def run_nli_attribution(reference: str, candidate: str, nli_model_id: str):
+    if not reference.strip() or not candidate.strip():
+        raise gr.Error("Enter both reference and candidate text.")
+    result = analyze_nli_attribution(
+        reference=reference.strip(),
+        candidate=candidate.strip(),
+        model_id=nli_model_id.strip() or DEFAULT_NLI_MODEL_ID,
+    )
+    return render_nli_attribution(result), attribution_rows(result)

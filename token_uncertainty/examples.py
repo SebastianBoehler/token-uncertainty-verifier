@@ -20,6 +20,9 @@ DEFAULT_CANDIDATE_TEXT = (
     "OpenAI released GPT-4 in 2023."
 )
 
+DEFAULT_NLI_REFERENCE_TEXT = "Apollo 11 landed on the Moon in 1969."
+DEFAULT_NLI_CANDIDATE_TEXT = "Apollo 11 landed on the Moon in 1972."
+
 DEFAULT_CONTRASTIVE_TEMPLATE = "Apollo 11 landed on the Moon in {answer}."
 DEFAULT_CONTRASTIVE_OPTIONS = ("1969", "1972", "1970")
 

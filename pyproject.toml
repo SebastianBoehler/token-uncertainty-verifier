@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "token-uncertainty-verifier"
 version = "0.1.0"
-description = "Token uncertainty, diff, and contrastive-likelihood overlays for LLM outputs."
+description = "LLM uncertainty, diff, contrastive-likelihood, and NLI span-attribution overlays."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -14,8 +14,10 @@ keywords = [
   "uncertainty",
   "llm",
   "claim-verification",
+  "entailment",
   "gradio",
   "huggingface",
+  "nli",
 ]
 dependencies = [
   "accelerate>=0.30",

@@ -1,5 +1,5 @@
 ---
-title: Token Uncertainty Verifier
+title: LLM Uncertainty Attribution Lab
 sdk: gradio
 sdk_version: 6.19.0
 app_file: app.py
@@ -7,15 +7,15 @@ license: mit
 python_version: "3.11"
 ---
 
-# Token Uncertainty Verifier
+# LLM Uncertainty Attribution Lab
 
 [![CI](https://github.com/SebastianBoehler/token-uncertainty-verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/SebastianBoehler/token-uncertainty-verifier/actions/workflows/ci.yml)
 [![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/sebastianboehler/token-uncertainty-verifier)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Token-level uncertainty, text-diff, and contrastive-likelihood overlays for LLM outputs, built as a small Gradio app and Hugging Face Space.
+Token-level uncertainty, text-diff, contrastive-likelihood, and NLI span-attribution overlays for LLM outputs, built as a small Gradio app and Hugging Face Space.
 
-The project is designed for fast demos, hackathons, and early research workflows where you want to inspect factual-looking answers without pretending that token probabilities are fact checks. It keeps model uncertainty, textual change detection, and model-likelihood comparison separate from factual truth.
+The project is designed for fast demos, hackathons, and early research workflows where you want to inspect factual-looking answers without pretending that model scores are fact checks. It keeps model uncertainty, textual change detection, model-likelihood comparison, and NLI disagreement localization separate from factual truth.
 
 ## Demo
 
@@ -28,11 +28,12 @@ The project is designed for fast demos, hackathons, and early research workflows
 
 ## What It Shows
 
-The app exposes three separate signals:
+The app exposes four separate signals:
 
 - **Uncertainty overlay**: chosen-token probability, normalized entropy, rank, and margin from the scoring model's next-token distribution.
 - **Diff mode**: deterministic word-level changes between a reference text and a candidate text.
 - **Contrastive scoring**: relative model likelihood for candidate spans in the same sentence template.
+- **NLI span attribution**: black-box ablation over candidate spans using an entailment model, highlighting spans whose removal changes contradiction or entailment most.
 
 The most useful mode is pasted-text analysis. You can paste an answer from another model and use a local model to score where that exact text was easy or hard for the scoring model to predict.
 
@@ -45,6 +46,8 @@ The uncertainty overlay answers: "Which exact words were surprising to this scor
 Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide which value is correct.
 
 Contrastive scoring can say whether the scoring model prefers `1969`, `1972`, or another alternative in the same template. The preferred option is still not guaranteed to be true.
+
+NLI span attribution can localize semantic disagreement, for example showing that `1972` or `Elon Musk` explains why a candidate contradicts a reference. It still does not know which side is true unless the reference is trusted or backed by retrieval.
 
 ## Example Comparisons
 
@@ -72,6 +75,7 @@ Current scores are uncertainty and comparison signals, not factual grounding ind
 - Head-to-head example comparison with authored scenario notes and compact hot-span summaries.
 - Diff mode for direct reference-vs-candidate changes.
 - Contrastive mode for scoring alternatives in a shared template.
+- NLI span attribution with focused word overlays and raw impact/focus tables.
 - Sample report generator for reproducible screenshots and CSV artifacts.
 - GitHub Actions CI for tests and smoke checks.
 
@@ -96,6 +100,12 @@ Force CPU execution:
 
 ```bash
 TOKEN_UV_DEVICE=cpu python app.py
+```
+
+Override the NLI attribution model:
+
+```bash
+NLI_MODEL_ID=cross-encoder/nli-deberta-v3-small python app.py
 ```
 
 ## Generate Samples
@@ -146,6 +156,7 @@ token_uncertainty/
   app_ui.py        Gradio layout and event wiring
   comparison_modes.py Diff and contrastive rendering
   model_runner.py  Transformers model loading, generation, and text scoring
+  nli_attribution.py Entailment scoring and span attribution
   scoring.py       Distribution-only uncertainty scoring
   rendering.py     HTML overlays and score tables
   types.py         Shared dataclasses
@@ -167,6 +178,7 @@ hf upload sebastianboehler/token-uncertainty-verifier . . --repo-type space
 
 - Add retrieval-backed verification against cited sources.
 - Add source-backed span labels that distinguish unsupported, contradicted, and supported text.
+- Add semantic-entropy sampling and clustering as a separate answer-level mode.
 - Add calibrated thresholds per domain and model family.
 - Export overlays as standalone HTML snippets for reports.
 

@@ -10,17 +10,21 @@ from token_uncertainty.app_actions import (
     run_example_comparison,
     run_existing_text,
     run_generation,
+    run_nli_attribution,
 )
 from token_uncertainty.examples import (
     DEFAULT_CANDIDATE_TEXT,
     DEFAULT_CONTRASTIVE_OPTIONS,
     DEFAULT_CONTRASTIVE_TEMPLATE,
     DEFAULT_CONTEXT,
+    DEFAULT_NLI_CANDIDATE_TEXT,
+    DEFAULT_NLI_REFERENCE_TEXT,
     DEFAULT_REFERENCE_TEXT,
     combined_example_text,
     example_labels,
 )
 from token_uncertainty.model_runner import DEFAULT_MODEL_ID
+from token_uncertainty.nli_attribution import DEFAULT_NLI_MODEL_ID
 
 SENTENCE_HEADERS = [
     "sentence",
@@ -48,6 +52,16 @@ CONTRASTIVE_HEADERS = [
     "relative_weight",
 ]
 
+NLI_HEADERS = [
+    "span",
+    "removed_text",
+    "impact",
+    "focus",
+    "contradiction_after",
+    "entailment_after",
+    "neutral_after",
+]
+
 DEFAULT_PROMPT = (
     "List three specific scientific or historical claims with dates and sources "
     "in one sentence each."
@@ -60,16 +74,17 @@ DEFAULT_TEXT = (
 UNCERTAINTY_NOTE = (
     "Uncertainty here is a model-distribution signal from token probability, entropy, "
     "rank, and margin. It is not factual truth, and it does not use regex or keyword "
-    "labels. Diff mode shows textual changes; contrastive mode compares model likelihood. "
-    "None of these modes prove factual correctness."
+    "labels. Diff mode shows textual changes; contrastive mode compares model likelihood; "
+    "NLI span attribution localizes semantic disagreement. None of these modes prove "
+    "factual correctness."
 )
 
 
 def create_demo() -> gr.Blocks:
-    with gr.Blocks(title="Token Uncertainty Verifier") as demo:
+    with gr.Blocks(title="LLM Uncertainty Attribution Lab") as demo:
         gr.Markdown(
-            "# Token Uncertainty Verifier\n"
-            "Token-level model uncertainty for factual-looking answers.\n\n"
+            "# LLM Uncertainty Attribution Lab\n"
+            "Token uncertainty, contrastive likelihood, and NLI span attribution for factual-looking answers.\n\n"
             f"{UNCERTAINTY_NOTE}"
         )
 
@@ -149,6 +164,27 @@ def create_demo() -> gr.Blocks:
                     label="Alternative scores",
                 )
 
+            with gr.Tab("NLI Span Attribution"):
+                gr.Markdown(
+                    "Compare a reference and candidate. The NLI model scores entailment, "
+                    "then candidate spans are removed to see which removal changes the NLI decision most."
+                )
+                with gr.Row():
+                    nli_reference = gr.Textbox(
+                        value=DEFAULT_NLI_REFERENCE_TEXT,
+                        label="Reference",
+                        lines=5,
+                    )
+                    nli_candidate = gr.Textbox(
+                        value=DEFAULT_NLI_CANDIDATE_TEXT,
+                        label="Candidate",
+                        lines=5,
+                    )
+                nli_model = gr.Textbox(value=DEFAULT_NLI_MODEL_ID, label="NLI model ID")
+                nli_button = gr.Button("Localize NLI disagreement", variant="primary")
+                nli_html = gr.HTML(label="NLI span attribution")
+                nli_table = gr.Dataframe(headers=NLI_HEADERS, label="Attribution rows")
+
         generated_text = gr.Textbox(label="Analyzed text", lines=8)
         with gr.Tabs():
             with gr.Tab("Word Overlay"):
@@ -190,6 +226,11 @@ def create_demo() -> gr.Blocks:
             run_contrastive_mode,
             [contrastive_template, contrastive_options, contrastive_context, model_id],
             [contrastive_html, contrastive_table],
+        )
+        nli_button.click(
+            run_nli_attribution,
+            [nli_reference, nli_candidate, nli_model],
+            [nli_html, nli_table],
         )
 
     return demo
