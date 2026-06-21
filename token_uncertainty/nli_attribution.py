@@ -7,11 +7,6 @@ import math
 import os
 import re
 
-import torch
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
-
-from token_uncertainty.model_runner import preferred_device
-
 DEFAULT_NLI_MODEL_ID = os.getenv("NLI_MODEL_ID", "cross-encoder/nli-deberta-v3-small")
 WORD_RE = re.compile(r"\b\w+(?:[-']\w+)*\b")
 SENTENCE_RE = re.compile(r"[^.!?]+[.!?]|[^.!?]+$")
@@ -53,6 +48,10 @@ def clean_label_map(labels: dict[int, str]) -> dict[int, str]:
 
 @lru_cache(maxsize=2)
 def load_nli_model(model_id: str = DEFAULT_NLI_MODEL_ID):
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+    from token_uncertainty.model_runner import preferred_device
+
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForSequenceClassification.from_pretrained(model_id)
     model.to(preferred_device())
@@ -61,6 +60,8 @@ def load_nli_model(model_id: str = DEFAULT_NLI_MODEL_ID):
 
 
 def score_pair(reference: str, candidate: str, model_id: str = DEFAULT_NLI_MODEL_ID) -> dict[str, float]:
+    import torch
+
     tokenizer, model, labels = load_nli_model(model_id)
     batch = tokenizer(reference, candidate, return_tensors="pt", truncation=True, max_length=512)
     batch = {key: value.to(next(model.parameters()).device) for key, value in batch.items()}
