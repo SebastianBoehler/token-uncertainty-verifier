@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gradio as gr
 
+from token_uncertainty.examples import DEFAULT_CONTEXT, combined_example_text, example_labels, get_example
 from token_uncertainty.model_runner import DEFAULT_MODEL_ID, analyze_existing_text, generate_with_scores
 from token_uncertainty.rendering import (
     render_sentence_overlay,
@@ -36,12 +37,13 @@ DEFAULT_PROMPT = (
 )
 
 DEFAULT_TEXT = (
-    "Apollo 11 landed on the Moon in 1969. "
-    "Apollo 11 landed on the Moon in 1972. "
-    "The Eiffel Tower opened in 1889. "
-    "The Eiffel Tower opened in 1899. "
-    "Project Atlas released build ATLAS-42 in report 14. "
-    "The summary discussed product quality and user feedback."
+    combined_example_text()
+)
+
+UNCERTAINTY_NOTE = (
+    "Uncertainty here is a model-distribution signal from token probability, entropy, "
+    "rank, and margin. It is not factual truth. Factual risk combines that signal with "
+    "claim cues and internal conflicts to decide what should be verified first."
 )
 
 
@@ -86,11 +88,27 @@ def run_existing_text(text: str, context: str, model_id: str, risk_threshold: fl
     return _outputs(result, risk_threshold)
 
 
+def example_note(label: str) -> str:
+    case = get_example(label)
+    return f"**{case.label}**\n\n{case.note}"
+
+
+def run_example(label: str, model_id: str, risk_threshold: float):
+    case = get_example(label)
+    result = analyze_existing_text(
+        text=case.text,
+        context=case.context,
+        model_id=model_id.strip() or DEFAULT_MODEL_ID,
+    )
+    return (case.context, case.text, example_note(label), *_outputs(result, risk_threshold))
+
+
 def create_demo() -> gr.Blocks:
     with gr.Blocks(title="Token Uncertainty Verifier") as demo:
         gr.Markdown(
             "# Token Uncertainty Verifier\n"
-            "Token-level uncertainty plus claim-risk triage for factual answers."
+            "Token-level uncertainty plus claim-risk triage for factual answers.\n\n"
+            f"{UNCERTAINTY_NOTE}"
         )
 
         with gr.Row():
@@ -114,9 +132,18 @@ def create_demo() -> gr.Blocks:
                 generate_button = gr.Button("Generate overlay", variant="primary")
 
             with gr.Tab("Analyze Text"):
-                context = gr.Textbox(label="Context", lines=3)
+                context = gr.Textbox(value=DEFAULT_CONTEXT, label="Context", lines=3)
                 existing_text = gr.Textbox(value=DEFAULT_TEXT, label="Text", lines=7)
                 analyze_button = gr.Button("Analyze overlay", variant="primary")
+
+            with gr.Tab("Examples"):
+                example_choice = gr.Radio(
+                    choices=example_labels(),
+                    value=example_labels()[0],
+                    label="Scenario",
+                )
+                example_details = gr.Markdown(value=example_note(example_labels()[0]))
+                example_button = gr.Button("Analyze example", variant="primary")
 
         generated_text = gr.Textbox(label="Analyzed text", lines=8)
         with gr.Tabs():
@@ -138,6 +165,12 @@ def create_demo() -> gr.Blocks:
             run_existing_text,
             [existing_text, context, model_id, threshold],
             outputs,
+        )
+        example_choice.change(example_note, example_choice, example_details)
+        example_button.click(
+            run_example,
+            [example_choice, model_id, threshold],
+            [context, existing_text, example_details, *outputs],
         )
 
     return demo

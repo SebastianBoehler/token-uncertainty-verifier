@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
 
 from transformers import set_seed
 
+from token_uncertainty.examples import EXAMPLE_CASES, ExampleCase
 from token_uncertainty.model_runner import analyze_existing_text
 from token_uncertainty.rendering import (
     render_sentence_overlay,
@@ -22,18 +23,7 @@ from token_uncertainty.rendering import (
     sentence_rows,
     token_rows,
 )
-
-SAMPLE_CONTEXT = "Assess this answer for statements that deserve verification."
-SAMPLE_TEXT = (
-    "Apollo 11 landed on the Moon in 1969. "
-    "Apollo 11 landed on the Moon in 1972. "
-    "The Eiffel Tower opened in 1889. "
-    "The Eiffel Tower opened in 1899. "
-    "OpenAI released GPT-4 in 2023. "
-    "OpenAI released GPT-4 in 2021. "
-    "Project Atlas released build ATLAS-42 in report 14. "
-    "The summary discussed product quality and user feedback."
-)
+from token_uncertainty.types import AnalysisResult
 
 
 def write_csv(path: Path, headers: list[str], rows: list[list[object]]) -> None:
@@ -43,21 +33,33 @@ def write_csv(path: Path, headers: list[str], rows: list[list[object]]) -> None:
         writer.writerows(rows)
 
 
-def write_report(path: Path, text: str, token_html: str, sentence_html: str) -> None:
+def write_report(path: Path, analyses: list[tuple[ExampleCase, AnalysisResult, str, str]]) -> None:
+    sections = []
+    for case, result, token_html, sentence_html in analyses:
+        sections.extend(
+            [
+                f"<section><h2>{escape(case.label)}</h2>",
+                f"<p>{escape(case.note)}</p>",
+                f"<pre>{escape(result.text)}</pre>",
+                "<h3>Token Overlay</h3>",
+                token_html,
+                "<h3>Sentence Overlay</h3>",
+                sentence_html,
+                "</section>",
+            ]
+        )
+
     path.write_text(
         "\n".join(
             [
                 "<!doctype html>",
                 "<html><head><meta charset='utf-8'><title>Token Uncertainty Sample</title>",
-                "<style>body{max-width:1040px;margin:40px auto;font:16px system-ui;color:#111}</style>",
+                "<style>body{max-width:1040px;margin:40px auto;font:16px system-ui;color:#111}"
+                "section{margin:0 0 42px}pre{white-space:pre-wrap}</style>",
                 "</head><body>",
-                "<h1>Token Uncertainty Sample</h1>",
-                "<h2>Analyzed Text</h2>",
-                f"<pre>{escape(text)}</pre>",
-                "<h2>Token Overlay</h2>",
-                token_html,
-                "<h2>Sentence Overlay</h2>",
-                sentence_html,
+                "<h1>Token Uncertainty Example Comparisons</h1>",
+                "<p>These examples show verification-priority signals, not proof of truth.</p>",
+                *sections,
                 "</body></html>",
             ]
         ),
@@ -72,29 +74,32 @@ def main() -> None:
     args = parser.parse_args()
 
     set_seed(args.seed)
-    result = analyze_existing_text(
-        SAMPLE_TEXT,
-        context=SAMPLE_CONTEXT,
-        model_id=args.model_id,
-    )
+    analyses = []
+    token_csv_rows: list[list[object]] = []
+    sentence_csv_rows: list[list[object]] = []
+    for case in EXAMPLE_CASES:
+        result = analyze_existing_text(case.text, context=case.context, model_id=args.model_id)
+        token_html = render_token_overlay(result.tokens)
+        sentence_html = render_sentence_overlay(result.sentences)
+        analyses.append((case, result, token_html, sentence_html))
+        token_csv_rows.extend([[case.label, *row] for row in token_rows(result.tokens)])
+        sentence_csv_rows.extend([[case.label, *row] for row in sentence_rows(result.sentences)])
 
     samples_dir = ROOT / "samples"
     samples_dir.mkdir(exist_ok=True)
     write_report(
         samples_dir / "sample_report.html",
-        result.text,
-        render_token_overlay(result.tokens),
-        render_sentence_overlay(result.sentences),
+        analyses,
     )
     write_csv(
         samples_dir / "sample_tokens.csv",
-        ["#", "token", "probability", "uncertainty", "factual_risk", "rank", "margin", "claim_cues"],
-        token_rows(result.tokens),
+        ["example", "#", "token", "probability", "uncertainty", "factual_risk", "rank", "margin", "claim_cues"],
+        token_csv_rows,
     )
     write_csv(
         samples_dir / "sample_sentences.csv",
-        ["sentence", "text", "factual_risk", "mean_uncertainty", "max_token_risk", "claim_cues"],
-        sentence_rows(result.sentences),
+        ["example", "sentence", "text", "factual_risk", "mean_uncertainty", "max_token_risk", "claim_cues"],
+        sentence_csv_rows,
     )
     print(f"Wrote samples to {samples_dir}")
 

@@ -28,10 +28,25 @@ The project is designed for fast demos, hackathons, and early research workflows
 
 The app exposes two layers:
 
-- **Token uncertainty**: chosen-token probability, normalized entropy, rank, and margin from a causal language model.
+- **Token uncertainty**: chosen-token probability, normalized entropy, rank, and margin from the scoring model's next-token distribution.
 - **Factual-risk triage**: local claim cues such as dates, references, identifiers, numbers, named entities, claim-heavy verbs, and repeated-claim conflicts.
 
 The most useful mode is pasted-text analysis. You can paste an answer from another model and use a local model to score where the text looks claim-heavy, unstable, or internally inconsistent.
+
+## Interpreting Uncertainty
+
+Uncertainty is not factual truth. It reflects what the local scoring model assigns to the next-token distribution after pretraining and post-training: probability mass, entropy, rank, and margin under the provided context. The model can be uncertain about a true claim, confident about a false claim, or unaware of facts that changed after its training unless those facts are provided in context.
+
+The factual-risk score is therefore a triage signal. It combines model uncertainty with claim cues and internal contradictions to answer: "Which exact tokens should be verified first?"
+
+## Example Comparisons
+
+The Gradio app includes an **Examples** tab with four scenario overlays:
+
+- **Correct baseline**: known factual claims still highlight dates and entities because they are verification-worthy.
+- **Year-only error**: a wrong year is marked as a risky date-bearing claim, but the overlay alone cannot know it is false.
+- **Contradictory variants**: repeated subjects with inconsistent years create clear token-level conflict flags.
+- **False side sentence**: a mostly correct answer with one unsupported side claim marks that claim's date and entity tokens for review.
 
 ## What It Does Not Do
 
@@ -77,13 +92,13 @@ TOKEN_UV_DEVICE=cpu python app.py
 python scripts/generate_samples.py --model-id sshleifer/tiny-gpt2
 ```
 
-This writes:
+This writes multi-scenario comparison outputs:
 
 - `samples/sample_report.html`
 - `samples/sample_tokens.csv`
 - `samples/sample_sentences.csv`
 
-The sample text intentionally includes contradictory factual variants so the overlay has clear token-level flags.
+The sample report intentionally contrasts correct, wrong-year, contradictory, and side-claim variants. The goal is to show what the overlay can and cannot flag without retrieval.
 
 ## Development
 
