@@ -1,14 +1,14 @@
-example,sentence,text,factual_risk,mean_uncertainty,max_token_risk,claim_cues
-Correct baseline,1,Apollo 11 landed on the Moon in 1969.,0.93374,0.99998,0.92499,"claim-term, date, named-entity, number"
-Correct baseline,2,The Eiffel Tower opened in 1889.,0.93374,0.99998,0.925,"claim-term, date, named-entity, number"
-Correct baseline,3,OpenAI released GPT-4 in 2023.,0.93374,0.99998,0.925,"claim-term, date, identifier, named-entity, number"
-Year-only error,1,Apollo 11 landed on the Moon in 1972.,0.93374,0.99998,0.92499,"claim-term, date, named-entity, number"
-Year-only error,2,The Eiffel Tower opened in 1889.,0.93374,0.99998,0.925,"claim-term, date, named-entity, number"
-Year-only error,3,OpenAI released GPT-4 in 2023.,0.93374,0.99998,0.925,"claim-term, date, identifier, named-entity, number"
-Contradictory variants,1,Apollo 11 landed on the Moon in 1969.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
-Contradictory variants,2,Apollo 11 landed on the Moon in 1972.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
-Contradictory variants,3,The Eiffel Tower opened in 1889.,0.975,0.99998,1.0,"claim-term, date, named-entity, number"
-Contradictory variants,4,The Eiffel Tower opened in 1899.,0.97499,0.99998,1.0,"claim-term, date, named-entity, number"
-False side sentence,1,Apollo 11 landed on the Moon in 1969.,0.93374,0.99998,0.92499,"claim-term, date, named-entity, number"
-False side sentence,2,The mission also carried tourists to Mars in 1970.,0.93374,0.99998,0.92499,"date, named-entity, number"
-False side sentence,3,The Eiffel Tower opened in 1889.,0.93374,0.99998,0.92499,"claim-term, date, named-entity, number"
+example,sentence,text,uncertainty_score,mean_uncertainty,max_token_uncertainty
+Reference wording,1,Apollo 11 landed on the Moon in 1969.,0.99998,0.99998,0.99999
+Reference wording,2,The Eiffel Tower opened in 1889.,0.99998,0.99998,0.99999
+Reference wording,3,OpenAI released GPT-4 in 2023.,0.99998,0.99998,0.99999
+Year-only error,1,Apollo 11 landed on the Moon in 1972.,0.99998,0.99998,0.99998
+Year-only error,2,The Eiffel Tower opened in 1889.,0.99998,0.99998,0.99999
+Year-only error,3,OpenAI released GPT-4 in 2023.,0.99998,0.99998,0.99999
+Contradictory variants,1,Apollo 11 landed on the Moon in 1969.,0.99998,0.99998,0.99999
+Contradictory variants,2,Apollo 11 landed on the Moon in 1972.,0.99998,0.99998,0.99999
+Contradictory variants,3,The Eiffel Tower opened in 1889.,0.99999,0.99998,0.99999
+Contradictory variants,4,The Eiffel Tower opened in 1899.,0.99998,0.99998,0.99999
+False side sentence,1,Apollo 11 landed on the Moon in 1969.,0.99998,0.99998,0.99999
+False side sentence,2,The mission also carried tourists to Mars in 1970.,0.99998,0.99998,0.99998
+False side sentence,3,The Eiffel Tower opened in 1889.,0.99998,0.99998,0.99999

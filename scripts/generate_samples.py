@@ -17,6 +17,8 @@ from transformers import set_seed
 from token_uncertainty.examples import EXAMPLE_CASES, ExampleCase
 from token_uncertainty.model_runner import analyze_existing_text
 from token_uncertainty.rendering import (
+    ComparisonSection,
+    grouped_hot_spans,
     render_comparison_grid,
     render_sentence_overlay,
     render_token_overlay,
@@ -34,7 +36,17 @@ def write_csv(path: Path, headers: list[str], rows: list[list[object]]) -> None:
 
 
 def write_report(path: Path, analyses: list[tuple[ExampleCase, AnalysisResult, str, str]]) -> None:
-    sections = [(case.label, case.note, token_html, sentence_html) for case, _, token_html, sentence_html in analyses]
+    sections = [
+        ComparisonSection(
+            label=case.label,
+            note=case.note,
+            focus=case.focus,
+            hot_spans=grouped_hot_spans(result.tokens, 0.82),
+            token_html=token_html,
+            sentence_html=sentence_html,
+        )
+        for case, result, token_html, sentence_html in analyses
+    ]
     path.write_text(
         "\n".join(
             [
@@ -43,7 +55,7 @@ def write_report(path: Path, analyses: list[tuple[ExampleCase, AnalysisResult, s
                 "<style>body{max-width:1280px;margin:40px auto;font:16px system-ui;color:#111}</style>",
                 "</head><body>",
                 "<h1>Token Uncertainty Head-to-Head Comparisons</h1>",
-                "<p>These examples show verification-priority signals, not proof of truth.</p>",
+                "<p>These examples show model-distribution uncertainty, not proof of truth.</p>",
                 render_comparison_grid(sections),
                 "</body></html>",
             ]
@@ -78,12 +90,12 @@ def main() -> None:
     )
     write_csv(
         samples_dir / "sample_tokens.csv",
-        ["example", "#", "token", "probability", "uncertainty", "factual_risk", "rank", "margin", "claim_cues"],
+        ["example", "#", "token", "probability", "uncertainty", "rank", "margin"],
         token_csv_rows,
     )
     write_csv(
         samples_dir / "sample_sentences.csv",
-        ["example", "sentence", "text", "factual_risk", "mean_uncertainty", "max_token_risk", "claim_cues"],
+        ["example", "sentence", "text", "uncertainty_score", "mean_uncertainty", "max_token_uncertainty"],
         sentence_csv_rows,
     )
     print(f"Wrote samples to {samples_dir}")

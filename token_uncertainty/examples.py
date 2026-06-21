@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 
 DEFAULT_CONTEXT = (
-    "Treat this as a verification triage pass. The overlay should identify "
-    "claim-heavy spans and internal conflicts; it does not prove truth or falsehood."
+    "Treat this as an uncertainty pass. The overlay shows model-distribution "
+    "uncertainty only; it does not prove truth or falsehood."
 )
 
 
@@ -14,15 +14,21 @@ class ExampleCase:
     label: str
     note: str
     text: str
+    focus: tuple[str, ...]
     context: str = DEFAULT_CONTEXT
 
 
 EXAMPLE_CASES = (
     ExampleCase(
-        label="Correct baseline",
+        label="Reference wording",
         note=(
-            "Known factual claims. Dates and named entities can still be highlighted "
-            "because they are verification-worthy, not because they are false."
+            "A plausible reference version. Highlights still mean model uncertainty, "
+            "not correctness or incorrectness."
+        ),
+        focus=(
+            "No truth label",
+            "Use as comparison anchor",
+            "Check whether highlights are selective",
         ),
         text=(
             "Apollo 11 landed on the Moon in 1969. "
@@ -33,8 +39,13 @@ EXAMPLE_CASES = (
     ExampleCase(
         label="Year-only error",
         note=(
-            "The Apollo year is wrong, but without retrieval the overlay can only "
-            "treat it as a risky date-bearing claim."
+            "One value is changed relative to the reference. The model score may "
+            "or may not isolate that exact value."
+        ),
+        focus=(
+            "Changed value: 1969 to 1972",
+            "Watch sentence S1",
+            "Needs retrieval for truth",
         ),
         text=(
             "Apollo 11 landed on the Moon in 1972. "
@@ -45,8 +56,13 @@ EXAMPLE_CASES = (
     ExampleCase(
         label="Contradictory variants",
         note=(
-            "Repeated subjects with conflicting years create visible token-level "
-            "conflict flags on the exact values."
+            "Two subjects are repeated with incompatible years. The app no longer "
+            "uses rule-based contradiction boosts, so this tests distribution-only visibility."
+        ),
+        focus=(
+            "1969 vs 1972",
+            "1889 vs 1899",
+            "No rule-based conflict boost",
         ),
         text=(
             "Apollo 11 landed on the Moon in 1969. "
@@ -58,9 +74,13 @@ EXAMPLE_CASES = (
     ExampleCase(
         label="False side sentence",
         note=(
-            "A mostly correct answer with one unsupported side claim. The overlay "
-            "marks the side claim's date and entity tokens for review, but external "
-            "evidence is needed."
+            "A side sentence is inserted into otherwise similar wording. The overlay "
+            "can only show whether the local model was uncertain there."
+        ),
+        focus=(
+            "Added side sentence",
+            "Watch sentence S2",
+            "External evidence needed",
         ),
         text=(
             "Apollo 11 landed on the Moon in 1969. "

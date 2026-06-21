@@ -11,6 +11,8 @@ from token_uncertainty.examples import (
 )
 from token_uncertainty.model_runner import DEFAULT_MODEL_ID, analyze_existing_text, generate_with_scores
 from token_uncertainty.rendering import (
+    ComparisonSection,
+    grouped_hot_spans,
     render_comparison_grid,
     render_sentence_overlay,
     render_token_overlay,
@@ -21,10 +23,9 @@ from token_uncertainty.rendering import (
 SENTENCE_HEADERS = [
     "sentence",
     "text",
-    "factual_risk",
+    "uncertainty_score",
     "mean_uncertainty",
-    "max_token_risk",
-    "claim_cues",
+    "max_token_uncertainty",
 ]
 
 TOKEN_HEADERS = [
@@ -32,10 +33,8 @@ TOKEN_HEADERS = [
     "token",
     "probability",
     "uncertainty",
-    "factual_risk",
     "rank",
     "margin",
-    "claim_cues",
 ]
 
 DEFAULT_PROMPT = (
@@ -49,8 +48,8 @@ DEFAULT_TEXT = (
 
 UNCERTAINTY_NOTE = (
     "Uncertainty here is a model-distribution signal from token probability, entropy, "
-    "rank, and margin. It is not factual truth. Factual risk combines that signal with "
-    "claim cues and internal conflicts to decide what should be verified first."
+    "rank, and margin. It is not factual truth, and it does not use regex or keyword "
+    "labels. Use highlighted spans as places to inspect first, not as correctness labels."
 )
 
 
@@ -119,11 +118,13 @@ def run_example_comparison(model_id: str, risk_threshold: float):
             model_id=model_id.strip() or DEFAULT_MODEL_ID,
         )
         sections.append(
-            (
-                case.label,
-                case.note,
-                render_token_overlay(result.tokens, risk_threshold),
-                render_sentence_overlay(result.sentences),
+            ComparisonSection(
+                label=case.label,
+                note=case.note,
+                focus=case.focus,
+                hot_spans=grouped_hot_spans(result.tokens, risk_threshold),
+                token_html=render_token_overlay(result.tokens, risk_threshold),
+                sentence_html=render_sentence_overlay(result.sentences),
             )
         )
     return render_comparison_grid(sections)
@@ -133,7 +134,7 @@ def create_demo() -> gr.Blocks:
     with gr.Blocks(title="Token Uncertainty Verifier") as demo:
         gr.Markdown(
             "# Token Uncertainty Verifier\n"
-            "Token-level uncertainty plus claim-risk triage for factual answers.\n\n"
+            "Token-level model uncertainty for factual-looking answers.\n\n"
             f"{UNCERTAINTY_NOTE}"
         )
 
@@ -142,9 +143,10 @@ def create_demo() -> gr.Blocks:
             threshold = gr.Slider(
                 minimum=0.0,
                 maximum=1.0,
-                value=0.45,
+                value=0.82,
                 step=0.01,
-                label="Verify threshold",
+                label="Highlight threshold",
+                info="Higher values make the overlay more selective.",
                 scale=1,
             )
 
@@ -176,8 +178,8 @@ def create_demo() -> gr.Blocks:
 
         generated_text = gr.Textbox(label="Analyzed text", lines=8)
         with gr.Tabs():
-            with gr.Tab("Token Overlay"):
-                token_html = gr.HTML(label="Token overlay")
+            with gr.Tab("Word Overlay"):
+                token_html = gr.HTML(label="Word overlay")
             with gr.Tab("Sentence Overlay"):
                 sentence_html = gr.HTML(label="Sentence overlay")
             with gr.Tab("Sentence Scores"):

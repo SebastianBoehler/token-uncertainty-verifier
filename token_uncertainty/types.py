@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass(slots=True)
@@ -12,19 +12,16 @@ class TokenScore:
     rank: int | None = None
     margin: float | None = None
     sentence_index: int = 0
-    claim_cues: tuple[str, ...] = field(default_factory=tuple)
     uncertainty: float = 0.0
-    factual_risk: float = 0.0
 
 
 @dataclass(slots=True)
 class SentenceRisk:
     index: int
     text: str
-    factual_risk: float
+    uncertainty_score: float
     mean_uncertainty: float
-    max_token_risk: float
-    claim_cues: tuple[str, ...]
+    max_token_uncertainty: float
 
 
 @dataclass(slots=True)

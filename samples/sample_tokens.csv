@@ -1,127 +1,127 @@
-example,#,token,probability,uncertainty,factual_risk,rank,margin,claim_cues
-Correct baseline,1,Ap,2e-05,0.99998,0.73749,32385,-0.0,named-entity
-Correct baseline,2,ollo,2e-05,0.99998,0.73749,17756,-0.0,named-entity
-Correct baseline,3, 11,2e-05,0.99998,0.8125,78,-0.0,"named-entity, number"
-Correct baseline,4, landed,2e-05,0.99998,0.43749,25277,-0.0,claim-term
-Correct baseline,5, on,2e-05,0.99999,0.12,19254,-0.0,
-Correct baseline,6, the,2e-05,0.99998,0.12,155,-0.0,
-Correct baseline,7, Moon,2e-05,0.99998,0.73749,17424,-0.0,named-entity
-Correct baseline,8, in,2e-05,0.99998,0.12,33927,-0.0,
-Correct baseline,9, 1969,2e-05,0.99998,0.92499,26585,-0.0,"date, number"
-Correct baseline,10,.,2e-05,0.99998,0.12,45895,-0.0,
-Correct baseline,11, The,2e-05,0.99998,0.12,9255,-0.0,
-Correct baseline,12, E,2e-05,0.99998,0.73749,16128,-0.0,named-entity
-Correct baseline,13,iff,2e-05,0.99998,0.73749,48088,-0.0,named-entity
-Correct baseline,14,el,2e-05,0.99998,0.73749,21311,-0.0,named-entity
-Correct baseline,15, Tower,2e-05,0.99998,0.7375,6061,-0.0,named-entity
-Correct baseline,16, opened,2e-05,0.99998,0.43749,20041,-0.0,claim-term
-Correct baseline,17, in,2e-05,0.99998,0.12,16331,-0.0,
-Correct baseline,18, 1889,2e-05,0.99998,0.925,22860,-0.0,"date, number"
-Correct baseline,19,.,2e-05,0.99998,0.12,4363,-0.0,
-Correct baseline,20, Open,2e-05,0.99998,0.7375,22295,-0.0,named-entity
-Correct baseline,21,AI,2e-05,0.99998,0.7375,11147,-0.0,named-entity
-Correct baseline,22, released,2e-05,0.99998,0.43749,21251,-0.0,claim-term
-Correct baseline,23, G,2e-05,0.99998,0.92499,8080,-0.0,"identifier, named-entity"
-Correct baseline,24,PT,2e-05,0.99998,0.92499,11337,-0.0,"identifier, named-entity"
-Correct baseline,25,-,2e-05,0.99998,0.925,676,-0.0,"identifier, named-entity"
-Correct baseline,26,4,2e-05,0.99998,0.92499,42846,-0.0,"identifier, named-entity, number"
-Correct baseline,27, in,2e-05,0.99998,0.12,33927,-0.0,
-Correct baseline,28, 20,2e-05,0.99998,0.92499,42476,-0.0,"date, number"
-Correct baseline,29,23,2e-05,0.99998,0.92499,47360,-0.0,"date, number"
-Correct baseline,30,.,2e-05,0.99998,0.12,45895,-0.0,
-Year-only error,1,Ap,2e-05,0.99998,0.73749,32385,-0.0,named-entity
-Year-only error,2,ollo,2e-05,0.99998,0.73749,17756,-0.0,named-entity
-Year-only error,3, 11,2e-05,0.99998,0.8125,78,-0.0,"named-entity, number"
-Year-only error,4, landed,2e-05,0.99998,0.43749,25277,-0.0,claim-term
-Year-only error,5, on,2e-05,0.99999,0.12,19254,-0.0,
-Year-only error,6, the,2e-05,0.99998,0.12,155,-0.0,
-Year-only error,7, Moon,2e-05,0.99998,0.73749,17424,-0.0,named-entity
-Year-only error,8, in,2e-05,0.99998,0.12,33927,-0.0,
-Year-only error,9, 1972,2e-05,0.99998,0.92499,13490,-0.0,"date, number"
-Year-only error,10,.,2e-05,0.99998,0.12,4363,-0.0,
-Year-only error,11, The,2e-05,0.99998,0.12,9255,-0.0,
-Year-only error,12, E,2e-05,0.99998,0.73749,16128,-0.0,named-entity
-Year-only error,13,iff,2e-05,0.99998,0.73749,48088,-0.0,named-entity
-Year-only error,14,el,2e-05,0.99998,0.73749,21311,-0.0,named-entity
-Year-only error,15, Tower,2e-05,0.99998,0.7375,6061,-0.0,named-entity
-Year-only error,16, opened,2e-05,0.99998,0.43749,20041,-0.0,claim-term
-Year-only error,17, in,2e-05,0.99998,0.12,16331,-0.0,
-Year-only error,18, 1889,2e-05,0.99998,0.925,22860,-0.0,"date, number"
-Year-only error,19,.,2e-05,0.99998,0.12,4363,-0.0,
-Year-only error,20, Open,2e-05,0.99998,0.7375,22295,-0.0,named-entity
-Year-only error,21,AI,2e-05,0.99998,0.7375,11147,-0.0,named-entity
-Year-only error,22, released,2e-05,0.99998,0.43749,21251,-0.0,claim-term
-Year-only error,23, G,2e-05,0.99998,0.92499,8080,-0.0,"identifier, named-entity"
-Year-only error,24,PT,2e-05,0.99998,0.92499,11337,-0.0,"identifier, named-entity"
-Year-only error,25,-,2e-05,0.99998,0.925,676,-0.0,"identifier, named-entity"
-Year-only error,26,4,2e-05,0.99998,0.92499,42846,-0.0,"identifier, named-entity, number"
-Year-only error,27, in,2e-05,0.99998,0.12,33927,-0.0,
-Year-only error,28, 20,2e-05,0.99998,0.92499,42476,-0.0,"date, number"
-Year-only error,29,23,2e-05,0.99998,0.92499,47360,-0.0,"date, number"
-Year-only error,30,.,2e-05,0.99998,0.12,45895,-0.0,
-Contradictory variants,1,Ap,2e-05,0.99998,0.73749,32385,-0.0,named-entity
-Contradictory variants,2,ollo,2e-05,0.99998,0.73749,17756,-0.0,named-entity
-Contradictory variants,3, 11,2e-05,0.99998,0.8125,78,-0.0,"named-entity, number"
-Contradictory variants,4, landed,2e-05,0.99998,0.43749,25277,-0.0,claim-term
-Contradictory variants,5, on,2e-05,0.99999,0.12,19254,-0.0,
-Contradictory variants,6, the,2e-05,0.99998,0.12,155,-0.0,
-Contradictory variants,7, Moon,2e-05,0.99998,0.73749,17424,-0.0,named-entity
-Contradictory variants,8, in,2e-05,0.99998,0.12,33927,-0.0,
-Contradictory variants,9, 1969,2e-05,0.99998,1.0,26585,-0.0,"conflict, date, number"
-Contradictory variants,10,.,2e-05,0.99998,0.12,45895,-0.0,
-Contradictory variants,11, Apollo,2e-05,0.99998,0.73749,21598,-0.0,named-entity
-Contradictory variants,12, 11,2e-05,0.99998,0.8125,50180,-0.0,"named-entity, number"
-Contradictory variants,13, landed,2e-05,0.99998,0.43749,25277,-0.0,claim-term
-Contradictory variants,14, on,2e-05,0.99998,0.12,19254,-0.0,
-Contradictory variants,15, the,2e-05,0.99998,0.12,50103,-0.0,
-Contradictory variants,16, Moon,2e-05,0.99998,0.73749,17424,-0.0,named-entity
-Contradictory variants,17, in,2e-05,0.99998,0.12,16331,-0.0,
-Contradictory variants,18, 1972,2e-05,0.99998,1.0,36768,-0.0,"conflict, date, number"
-Contradictory variants,19,.,2e-05,0.99998,0.12,4363,-0.0,
-Contradictory variants,20, The,2e-05,0.99998,0.12,9255,-0.0,
-Contradictory variants,21, E,2e-05,0.99998,0.73749,16128,-0.0,named-entity
-Contradictory variants,22,iff,2e-05,0.99998,0.7375,48088,-0.0,named-entity
-Contradictory variants,23,el,2e-05,0.99998,0.73749,21311,-0.0,named-entity
-Contradictory variants,24, Tower,2e-05,0.99999,0.7375,44197,-0.0,named-entity
-Contradictory variants,25, opened,2e-05,0.99998,0.4375,20041,-0.0,claim-term
-Contradictory variants,26, in,2e-05,0.99998,0.12,16331,-0.0,
-Contradictory variants,27, 1889,2e-05,0.99999,1.0,22860,-0.0,"conflict, date, number"
-Contradictory variants,28,.,2e-05,0.99998,0.12,45895,-0.0,
-Contradictory variants,29, The,2e-05,0.99998,0.12,9255,-0.0,
-Contradictory variants,30, E,2e-05,0.99998,0.73749,16128,-0.0,named-entity
-Contradictory variants,31,iff,2e-05,0.99998,0.7375,48088,-0.0,named-entity
-Contradictory variants,32,el,2e-05,0.99998,0.73749,21311,-0.0,named-entity
-Contradictory variants,33, Tower,2e-05,0.99998,0.73749,44197,-0.0,named-entity
-Contradictory variants,34, opened,2e-05,0.99998,0.43749,20041,-0.0,claim-term
-Contradictory variants,35, in,2e-05,0.99999,0.12,33927,-0.0,
-Contradictory variants,36, 1899,2e-05,0.99998,1.0,10374,-0.0,"conflict, date, number"
-Contradictory variants,37,.,2e-05,0.99998,0.12,45895,-0.0,
-False side sentence,1,Ap,2e-05,0.99998,0.73749,32385,-0.0,named-entity
-False side sentence,2,ollo,2e-05,0.99998,0.73749,17756,-0.0,named-entity
-False side sentence,3, 11,2e-05,0.99998,0.8125,78,-0.0,"named-entity, number"
-False side sentence,4, landed,2e-05,0.99998,0.43749,25277,-0.0,claim-term
-False side sentence,5, on,2e-05,0.99999,0.12,19254,-0.0,
-False side sentence,6, the,2e-05,0.99998,0.12,155,-0.0,
-False side sentence,7, Moon,2e-05,0.99998,0.73749,17424,-0.0,named-entity
-False side sentence,8, in,2e-05,0.99998,0.12,33927,-0.0,
-False side sentence,9, 1969,2e-05,0.99998,0.92499,26585,-0.0,"date, number"
-False side sentence,10,.,2e-05,0.99998,0.12,45895,-0.0,
-False side sentence,11, The,2e-05,0.99998,0.12,9255,-0.0,
-False side sentence,12, mission,2e-05,0.99998,0.12,17185,-0.0,
-False side sentence,13, also,2e-05,0.99998,0.12,10197,-0.0,
-False side sentence,14, carried,2e-05,0.99999,0.12,33560,-0.0,
-False side sentence,15, tourists,2e-05,0.99998,0.12,15222,-0.0,
-False side sentence,16, to,2e-05,0.99998,0.12,20756,-0.0,
-False side sentence,17, Mars,2e-05,0.99998,0.7375,16984,-0.0,named-entity
-False side sentence,18, in,2e-05,0.99998,0.12,16331,-0.0,
-False side sentence,19, 1970,2e-05,0.99998,0.92499,40966,-0.0,"date, number"
-False side sentence,20,.,2e-05,0.99998,0.12,45895,-0.0,
-False side sentence,21, The,2e-05,0.99998,0.12,9255,-0.0,
-False side sentence,22, E,2e-05,0.99998,0.73749,16128,-0.0,named-entity
-False side sentence,23,iff,2e-05,0.99998,0.73749,48088,-0.0,named-entity
-False side sentence,24,el,2e-05,0.99998,0.73749,21311,-0.0,named-entity
-False side sentence,25, Tower,2e-05,0.99998,0.73749,44197,-0.0,named-entity
-False side sentence,26, opened,2e-05,0.99999,0.4375,20041,-0.0,claim-term
-False side sentence,27, in,2e-05,0.99998,0.12,33927,-0.0,
-False side sentence,28, 1889,2e-05,0.99998,0.92499,22860,-0.0,"date, number"
-False side sentence,29,.,2e-05,0.99998,0.12,4363,-0.0,
+example,#,token,probability,uncertainty,rank,margin
+Reference wording,1,Ap,2e-05,0.99998,32385,-0.0
+Reference wording,2,ollo,2e-05,0.99998,17756,-0.0
+Reference wording,3, 11,2e-05,0.99998,78,-0.0
+Reference wording,4, landed,2e-05,0.99998,25277,-0.0
+Reference wording,5, on,2e-05,0.99998,31004,-0.0
+Reference wording,6, the,2e-05,0.99998,155,-0.0
+Reference wording,7, Moon,2e-05,0.99998,17424,-0.0
+Reference wording,8, in,2e-05,0.99998,16331,-0.0
+Reference wording,9, 1969,2e-05,0.99998,23673,-0.0
+Reference wording,10,.,2e-05,0.99999,45895,-0.0
+Reference wording,11, The,2e-05,0.99998,9255,-0.0
+Reference wording,12, E,2e-05,0.99998,16128,-0.0
+Reference wording,13,iff,2e-05,0.99998,48088,-0.0
+Reference wording,14,el,2e-05,0.99998,21311,-0.0
+Reference wording,15, Tower,2e-05,0.99999,44197,-0.0
+Reference wording,16, opened,2e-05,0.99998,20041,-0.0
+Reference wording,17, in,2e-05,0.99998,33927,-0.0
+Reference wording,18, 1889,2e-05,0.99998,22860,-0.0
+Reference wording,19,.,2e-05,0.99998,4363,-0.0
+Reference wording,20, Open,2e-05,0.99998,22295,-0.0
+Reference wording,21,AI,2e-05,0.99998,39111,-0.0
+Reference wording,22, released,2e-05,0.99998,21251,-0.0
+Reference wording,23, G,2e-05,0.99998,8080,-0.0
+Reference wording,24,PT,2e-05,0.99999,38921,-0.0
+Reference wording,25,-,2e-05,0.99998,49582,-0.0
+Reference wording,26,4,2e-05,0.99998,42846,-0.0
+Reference wording,27, in,2e-05,0.99998,33927,-0.0
+Reference wording,28, 20,2e-05,0.99998,42476,-0.0
+Reference wording,29,23,2e-05,0.99999,47360,-0.0
+Reference wording,30,.,2e-05,0.99998,45895,-0.0
+Year-only error,1,Ap,2e-05,0.99998,32385,-0.0
+Year-only error,2,ollo,2e-05,0.99998,17756,-0.0
+Year-only error,3, 11,2e-05,0.99998,78,-0.0
+Year-only error,4, landed,2e-05,0.99998,25277,-0.0
+Year-only error,5, on,2e-05,0.99998,31004,-0.0
+Year-only error,6, the,2e-05,0.99998,155,-0.0
+Year-only error,7, Moon,2e-05,0.99998,17424,-0.0
+Year-only error,8, in,2e-05,0.99998,16331,-0.0
+Year-only error,9, 1972,2e-05,0.99998,36768,-0.0
+Year-only error,10,.,2e-05,0.99998,4363,-0.0
+Year-only error,11, The,2e-05,0.99998,9255,-0.0
+Year-only error,12, E,2e-05,0.99998,16128,-0.0
+Year-only error,13,iff,2e-05,0.99998,48088,-0.0
+Year-only error,14,el,2e-05,0.99998,21311,-0.0
+Year-only error,15, Tower,2e-05,0.99999,44197,-0.0
+Year-only error,16, opened,2e-05,0.99998,20041,-0.0
+Year-only error,17, in,2e-05,0.99998,33927,-0.0
+Year-only error,18, 1889,2e-05,0.99998,22860,-0.0
+Year-only error,19,.,2e-05,0.99998,4363,-0.0
+Year-only error,20, Open,2e-05,0.99998,22296,-0.0
+Year-only error,21,AI,2e-05,0.99998,39111,-0.0
+Year-only error,22, released,2e-05,0.99998,21251,-0.0
+Year-only error,23, G,2e-05,0.99998,8080,-0.0
+Year-only error,24,PT,2e-05,0.99999,38921,-0.0
+Year-only error,25,-,2e-05,0.99998,49582,-0.0
+Year-only error,26,4,2e-05,0.99998,42846,-0.0
+Year-only error,27, in,2e-05,0.99998,33927,-0.0
+Year-only error,28, 20,2e-05,0.99998,42476,-0.0
+Year-only error,29,23,2e-05,0.99999,47360,-0.0
+Year-only error,30,.,2e-05,0.99998,45895,-0.0
+Contradictory variants,1,Ap,2e-05,0.99998,32385,-0.0
+Contradictory variants,2,ollo,2e-05,0.99998,17756,-0.0
+Contradictory variants,3, 11,2e-05,0.99998,78,-0.0
+Contradictory variants,4, landed,2e-05,0.99998,25277,-0.0
+Contradictory variants,5, on,2e-05,0.99998,31004,-0.0
+Contradictory variants,6, the,2e-05,0.99998,155,-0.0
+Contradictory variants,7, Moon,2e-05,0.99998,17424,-0.0
+Contradictory variants,8, in,2e-05,0.99998,16331,-0.0
+Contradictory variants,9, 1969,2e-05,0.99998,23673,-0.0
+Contradictory variants,10,.,2e-05,0.99999,45895,-0.0
+Contradictory variants,11, Apollo,2e-05,0.99998,21598,-0.0
+Contradictory variants,12, 11,2e-05,0.99998,50180,-0.0
+Contradictory variants,13, landed,2e-05,0.99998,25277,-0.0
+Contradictory variants,14, on,2e-05,0.99999,19254,-0.0
+Contradictory variants,15, the,2e-05,0.99998,155,-0.0
+Contradictory variants,16, Moon,2e-05,0.99998,17425,-0.0
+Contradictory variants,17, in,2e-05,0.99998,33927,-0.0
+Contradictory variants,18, 1972,2e-05,0.99998,36768,-0.0
+Contradictory variants,19,.,2e-05,0.99998,4363,-0.0
+Contradictory variants,20, The,2e-05,0.99998,9255,-0.0
+Contradictory variants,21, E,2e-05,0.99998,16128,-0.0
+Contradictory variants,22,iff,2e-05,0.99998,48088,-0.0
+Contradictory variants,23,el,2e-05,0.99998,28947,-0.0
+Contradictory variants,24, Tower,2e-05,0.99998,44197,-0.0
+Contradictory variants,25, opened,2e-05,0.99998,20041,-0.0
+Contradictory variants,26, in,2e-05,0.99999,33927,-0.0
+Contradictory variants,27, 1889,2e-05,0.99999,27398,-0.0
+Contradictory variants,28,.,2e-05,0.99999,4363,-0.0
+Contradictory variants,29, The,2e-05,0.99998,9255,-0.0
+Contradictory variants,30, E,2e-05,0.99998,34130,-0.0
+Contradictory variants,31,iff,2e-05,0.99998,48088,-0.0
+Contradictory variants,32,el,2e-05,0.99998,21311,-0.0
+Contradictory variants,33, Tower,2e-05,0.99998,6061,-0.0
+Contradictory variants,34, opened,2e-05,0.99998,20041,-0.0
+Contradictory variants,35, in,2e-05,0.99999,33927,-0.0
+Contradictory variants,36, 1899,2e-05,0.99998,10374,-0.0
+Contradictory variants,37,.,2e-05,0.99998,45895,-0.0
+False side sentence,1,Ap,2e-05,0.99998,32385,-0.0
+False side sentence,2,ollo,2e-05,0.99998,17756,-0.0
+False side sentence,3, 11,2e-05,0.99998,78,-0.0
+False side sentence,4, landed,2e-05,0.99998,25277,-0.0
+False side sentence,5, on,2e-05,0.99998,31004,-0.0
+False side sentence,6, the,2e-05,0.99998,155,-0.0
+False side sentence,7, Moon,2e-05,0.99998,17424,-0.0
+False side sentence,8, in,2e-05,0.99998,16331,-0.0
+False side sentence,9, 1969,2e-05,0.99998,23673,-0.0
+False side sentence,10,.,2e-05,0.99999,45895,-0.0
+False side sentence,11, The,2e-05,0.99998,9255,-0.0
+False side sentence,12, mission,2e-05,0.99998,17185,-0.0
+False side sentence,13, also,2e-05,0.99998,10197,-0.0
+False side sentence,14, carried,2e-05,0.99998,16698,-0.0
+False side sentence,15, tourists,2e-05,0.99998,15222,-0.0
+False side sentence,16, to,2e-05,0.99998,20756,-0.0
+False side sentence,17, Mars,2e-05,0.99998,33273,-0.0
+False side sentence,18, in,2e-05,0.99998,16331,-0.0
+False side sentence,19, 1970,2e-05,0.99998,40965,-0.0
+False side sentence,20,.,2e-05,0.99998,45895,-0.0
+False side sentence,21, The,2e-05,0.99998,9255,-0.0
+False side sentence,22, E,2e-05,0.99998,16128,-0.0
+False side sentence,23,iff,2e-05,0.99998,48088,-0.0
+False side sentence,24,el,2e-05,0.99998,21311,-0.0
+False side sentence,25, Tower,2e-05,0.99999,6060,-0.0
+False side sentence,26, opened,2e-05,0.99998,20041,-0.0
+False side sentence,27, in,2e-05,0.99998,33927,-0.0
+False side sentence,28, 1889,2e-05,0.99998,22860,-0.0
+False side sentence,29,.,2e-05,0.99998,45895,-0.0
