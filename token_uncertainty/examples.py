@@ -36,6 +36,41 @@ class ExampleCase:
     context: str = DEFAULT_CONTEXT
 
 
+@dataclass(frozen=True)
+class ChatExample:
+    label: str
+    reference: str
+    message: str
+
+
+CHAT_EXAMPLES = (
+    ChatExample(
+        label="False side sentence",
+        reference="Apollo 11 landed on the Moon in 1969. The Eiffel Tower opened in 1889.",
+        message=(
+            "Apollo 11 landed on the Moon in 1969. "
+            "The mission also carried tourists to Mars in 1970. "
+            "The Eiffel Tower opened in 1889."
+        ),
+    ),
+    ChatExample(
+        label="Year-only error",
+        reference=DEFAULT_NLI_REFERENCE_TEXT,
+        message=DEFAULT_NLI_CANDIDATE_TEXT,
+    ),
+    ChatExample(
+        label="Entity contradiction",
+        reference="Tesla was founded by Martin Eberhard and Marc Tarpenning in 2003.",
+        message="Tesla was founded by Elon Musk in 2003.",
+    ),
+    ChatExample(
+        label="Correct baseline",
+        reference=DEFAULT_REFERENCE_TEXT,
+        message=DEFAULT_REFERENCE_TEXT,
+    ),
+)
+
+
 EXAMPLE_CASES = (
     ExampleCase(
         label="Reference wording",
@@ -113,11 +148,22 @@ def example_labels() -> list[str]:
     return [case.label for case in EXAMPLE_CASES]
 
 
+def chat_example_labels() -> list[str]:
+    return [case.label for case in CHAT_EXAMPLES]
+
+
 def get_example(label: str) -> ExampleCase:
     for case in EXAMPLE_CASES:
         if case.label == label:
             return case
     return EXAMPLE_CASES[0]
+
+
+def get_chat_example(label: str) -> ChatExample:
+    for case in CHAT_EXAMPLES:
+        if case.label == label:
+            return case
+    return CHAT_EXAMPLES[0]
 
 
 def combined_example_text() -> str:

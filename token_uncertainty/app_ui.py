@@ -5,6 +5,7 @@ import gradio as gr
 from token_uncertainty.app_actions import (
     clear_chat,
     example_note,
+    load_chat_example,
     run_contrastive_mode,
     run_diff_mode,
     run_example,
@@ -22,8 +23,10 @@ from token_uncertainty.examples import (
     DEFAULT_NLI_CANDIDATE_TEXT,
     DEFAULT_NLI_REFERENCE_TEXT,
     DEFAULT_REFERENCE_TEXT,
+    chat_example_labels,
     combined_example_text,
     example_labels,
+    get_chat_example,
 )
 from token_uncertainty.model_runner import DEFAULT_MODEL_ID
 from token_uncertainty.nli_attribution import DEFAULT_NLI_MODEL_ID
@@ -64,14 +67,10 @@ NLI_HEADERS = [
     "neutral_after",
 ]
 
-DEFAULT_PROMPT = (
-    "List three specific scientific or historical claims with dates and sources "
-    "in one sentence each."
-)
+DEFAULT_PROMPT = "List three specific scientific or historical claims with dates and sources in one sentence each."
+DEFAULT_TEXT = combined_example_text()
 
-DEFAULT_TEXT = (
-    combined_example_text()
-)
+DEFAULT_CHAT_EXAMPLE = get_chat_example(chat_example_labels()[0])
 
 UNCERTAINTY_NOTE = (
     "Uncertainty here is a model-distribution signal from token probability, entropy, "
@@ -106,8 +105,8 @@ def create_demo() -> gr.Blocks:
             with gr.Tab("Chat + Overlay"):
                 gr.Markdown(
                     "Chat with the selected model. Each assistant reply is rendered as an inline overlay. "
-                    "With reference/evidence, the bubble uses NLI span shortening; without it, the bubble "
-                    "uses token uncertainty only. Highlights are not proof of factual error."
+                    "Reference/evidence is required; chat uses NLI span shortening only. "
+                    "Highlights localize disagreement against the reference, not truth by itself."
                 )
                 chat_state = gr.State([])
                 chat_display_state = gr.State([])
@@ -117,20 +116,22 @@ def create_demo() -> gr.Blocks:
                     placeholder="Ask a factual question and inspect the highlighted assistant bubble.",
                     sanitize_html=False,
                 )
+                chat_example_choice = gr.Dropdown(
+                    choices=chat_example_labels(), value=chat_example_labels()[0], label="Example"
+                )
                 chat_reference = gr.Textbox(
-                    label="Reference/evidence for NLI shortening (optional)",
+                    value=DEFAULT_CHAT_EXAMPLE.reference,
+                    label="Reference/evidence for NLI shortening",
                     lines=3,
-                    placeholder=(
-                        "Paste trusted evidence to localize disagreement. Example: Angela Merkel was "
-                        "born on July 17, 1954, in Hamburg, Germany."
-                    ),
+                    placeholder="Required. Paste trusted evidence to localize disagreement.",
                 )
                 chat_overlay_user = gr.Checkbox(
-                    value=False,
+                    value=True,
                     label="Overlay user messages too",
-                    info="Best for user-entered factual claims. Questions can produce noisy NLI or token scores.",
+                    info="Compares your typed factual claim to the same reference/evidence.",
                 )
                 chat_message = gr.Textbox(
+                    value=DEFAULT_CHAT_EXAMPLE.message,
                     label="Message",
                     lines=3,
                     placeholder="Ask something with specific dates, entities, or claims.",
@@ -171,25 +172,13 @@ def create_demo() -> gr.Blocks:
 
             with gr.Tab("Diff Mode"):
                 with gr.Row():
-                    diff_reference = gr.Textbox(
-                        value=DEFAULT_REFERENCE_TEXT,
-                        label="Reference",
-                        lines=5,
-                    )
-                    diff_candidate = gr.Textbox(
-                        value=DEFAULT_CANDIDATE_TEXT,
-                        label="Candidate",
-                        lines=5,
-                    )
+                    diff_reference = gr.Textbox(value=DEFAULT_REFERENCE_TEXT, label="Reference", lines=5)
+                    diff_candidate = gr.Textbox(value=DEFAULT_CANDIDATE_TEXT, label="Candidate", lines=5)
                 diff_button = gr.Button("Compare text changes", variant="primary")
                 diff_html = gr.HTML(label="Word-level diff")
 
             with gr.Tab("Contrastive"):
-                contrastive_context = gr.Textbox(
-                    value=DEFAULT_CONTEXT,
-                    label="Context",
-                    lines=2,
-                )
+                contrastive_context = gr.Textbox(value=DEFAULT_CONTEXT, label="Context", lines=2)
                 contrastive_template = gr.Textbox(
                     value=DEFAULT_CONTRASTIVE_TEMPLATE,
                     label="Template with {answer}",
@@ -202,10 +191,7 @@ def create_demo() -> gr.Blocks:
                 )
                 contrastive_button = gr.Button("Score alternatives", variant="primary")
                 contrastive_html = gr.HTML(label="Contrastive likelihood")
-                contrastive_table = gr.Dataframe(
-                    headers=CONTRASTIVE_HEADERS,
-                    label="Alternative scores",
-                )
+                contrastive_table = gr.Dataframe(headers=CONTRASTIVE_HEADERS, label="Alternative scores")
 
             with gr.Tab("NLI Span Attribution"):
                 gr.Markdown(
@@ -213,16 +199,8 @@ def create_demo() -> gr.Blocks:
                     "then candidate spans are removed to see which removal changes the NLI decision most."
                 )
                 with gr.Row():
-                    nli_reference = gr.Textbox(
-                        value=DEFAULT_NLI_REFERENCE_TEXT,
-                        label="Reference",
-                        lines=5,
-                    )
-                    nli_candidate = gr.Textbox(
-                        value=DEFAULT_NLI_CANDIDATE_TEXT,
-                        label="Candidate",
-                        lines=5,
-                    )
+                    nli_reference = gr.Textbox(value=DEFAULT_NLI_REFERENCE_TEXT, label="Reference", lines=5)
+                    nli_candidate = gr.Textbox(value=DEFAULT_NLI_CANDIDATE_TEXT, label="Candidate", lines=5)
                 nli_model = gr.Textbox(value=DEFAULT_NLI_MODEL_ID, label="NLI model ID")
                 nli_button = gr.Button("Localize NLI disagreement", variant="primary")
                 nli_html = gr.HTML(label="NLI span attribution")
@@ -254,6 +232,7 @@ def create_demo() -> gr.Blocks:
             chat_overlay_user,
         ]
         chat_outputs = [chat_message, chatbot, chat_state, chat_display_state, chat_nli_html, *outputs]
+        chat_example_choice.change(load_chat_example, chat_example_choice, [chat_reference, chat_message, chat_overlay_user])
         chat_button.click(run_chat_turn, chat_inputs, chat_outputs)
         chat_message.submit(run_chat_turn, chat_inputs, chat_outputs)
         clear_chat_button.click(clear_chat, outputs=chat_outputs)

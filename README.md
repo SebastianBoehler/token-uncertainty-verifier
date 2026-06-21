@@ -44,7 +44,7 @@ Uncertainty is not factual truth. It reflects what the local scoring model assig
 
 The uncertainty overlay answers: "Which exact words were surprising to this scoring model?" It does not answer: "Which claims are true?"
 
-Chat mode makes that signal easier to experience: ask the model a question and inspect the highlighted assistant bubble in the conversation. If you paste trusted reference/evidence first, the bubble uses the NLI shortening method to localize disagreement; without reference text, it only shows distribution uncertainty. Chat bubbles stay compact, with detailed scores in hover text or the dedicated analysis tabs. The optional user-message overlay scores typed text too, but that is input surprisal or reference disagreement, not model-generation uncertainty.
+Chat mode makes that signal easier to experience: choose a prefilled reference/candidate example or paste trusted reference text, then inspect the highlighted bubbles in the conversation. Chat requires reference/evidence and uses NLI shortening only, so it matches the HTML-style attribution demo instead of silently falling back to token uncertainty. Chat bubbles stay compact, with detailed scores in hover text or the dedicated analysis tabs.
 
 Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide which value is correct.
 
@@ -72,7 +72,7 @@ Current scores are uncertainty and comparison signals, not factual grounding ind
 ## Features
 
 - Gradio UI with generation and pasted-text analysis modes.
-- Chat mode that renders assistant turns, and optionally user turns, as inline overlays with optional reference-backed NLI span shortening.
+- Chat mode that renders assistant turns, and optionally user turns, as inline NLI span overlays against required reference/evidence.
 - Word-level overlay that aggregates token pieces and keeps hover tooltips for uncertainty.
 - Raw token score table and CSV for probability, uncertainty, rank, and margin.
 - Sentence-level summary table for scanning high-uncertainty statements.

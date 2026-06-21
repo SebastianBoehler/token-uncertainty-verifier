@@ -1,4 +1,10 @@
-from token_uncertainty.examples import EXAMPLE_CASES, combined_example_text, example_labels
+from token_uncertainty.examples import (
+    EXAMPLE_CASES,
+    chat_example_labels,
+    combined_example_text,
+    example_labels,
+    get_chat_example,
+)
 
 
 def test_example_labels_are_unique():
@@ -18,3 +24,14 @@ def test_examples_cover_comparison_scenarios():
     assert "tourists to Mars" in text
     assert all(case.context for case in EXAMPLE_CASES)
     assert all(case.focus for case in EXAMPLE_CASES)
+
+
+def test_chat_examples_fill_reference_and_message():
+    labels = chat_example_labels()
+
+    assert len(labels) == len(set(labels))
+    assert "False side sentence" in labels
+    for label in labels:
+        case = get_chat_example(label)
+        assert case.reference
+        assert case.message

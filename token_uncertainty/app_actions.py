@@ -8,13 +8,12 @@ from token_uncertainty.chat_mode import (
     clear_chat_outputs,
     messages_with_user,
 )
-from token_uncertainty.chat_rendering import render_compact_token_overlay
 from token_uncertainty.comparison_modes import (
     contrastive_rows,
     render_contrastive_scores,
     render_diff,
 )
-from token_uncertainty.examples import EXAMPLE_CASES, get_example
+from token_uncertainty.examples import EXAMPLE_CASES, get_chat_example, get_example
 from token_uncertainty.model_runner import (
     DEFAULT_MODEL_ID,
     analyze_existing_text,
@@ -50,11 +49,9 @@ def _outputs(result, threshold: float):
     )
 
 
-def _history_context(history: list[dict[str, str]] | None) -> str:
-    if not history:
-        return ""
-    lines = [f"{message['role'].title()}: {message['content']}" for message in history]
-    return "\n".join(lines) + "\nUser: "
+def load_chat_example(label: str):
+    case = get_chat_example(label)
+    return case.reference, case.message, True
 
 
 def _candidate_nli_outputs(reference: str, candidate: str) -> tuple[str, str]:
@@ -66,45 +63,16 @@ def _candidate_nli_outputs(reference: str, candidate: str) -> tuple[str, str]:
     return render_compact_nli_overlay(attribution), render_nli_attribution(attribution)
 
 
-def _assistant_overlay_html(result, threshold: float, reference: str) -> tuple[str, str]:
-    if reference.strip():
-        return _candidate_nli_outputs(reference, result.text)
-
-    note = (
-        "No reference/evidence provided. This bubble shows token uncertainty only, "
-        "so it cannot identify exact factual errors."
-    )
-    details = (
-        "<div style='padding:10px 12px;border:1px solid #ddd;border-radius:8px;"
-        "background:#fff;color:#222;font:13px/1.45 system-ui'>"
-        "Paste trusted reference/evidence in the chat tab to enable NLI span shortening "
-        "for the next assistant reply."
-        "</div>"
-    )
-    return render_compact_token_overlay(result.tokens, threshold, note), details
+def _assistant_overlay_html(result, reference: str) -> tuple[str, str]:
+    return _candidate_nli_outputs(reference, result.text)
 
 
 def _user_overlay_html(
     message: str,
-    history: list[dict[str, str]] | None,
-    model_id: str,
-    threshold: float,
     reference: str,
 ) -> str:
-    if reference.strip():
-        overlay, _ = _candidate_nli_outputs(reference, message.strip())
-        return overlay
-
-    result = analyze_existing_text(
-        text=message.strip(),
-        context=_history_context(history),
-        model_id=model_id,
-    )
-    note = (
-        "User-input token overlay. This scores how surprising your typed text is to the "
-        "scoring model; it is not generation uncertainty."
-    )
-    return render_compact_token_overlay(result.tokens, threshold, note)
+    overlay, _ = _candidate_nli_outputs(reference, message.strip())
+    return overlay
 
 
 def run_generation(
@@ -141,6 +109,8 @@ def run_chat_turn(
 ):
     if not message.strip():
         raise gr.Error("Enter a message.")
+    if not reference.strip():
+        raise gr.Error("Paste reference/evidence first. Chat overlay uses NLI shortening and requires a reference.")
     messages = messages_with_user(history, message)
     result = generate_chat_with_scores(
         messages=messages,
@@ -150,14 +120,11 @@ def run_chat_turn(
         top_p=top_p,
     )
     next_history = append_assistant(messages, result.text)
-    assistant_html, nli_html = _assistant_overlay_html(result, risk_threshold, reference or "")
+    assistant_html, nli_html = _assistant_overlay_html(result, reference)
     user_html = None
-    if overlay_user:
+    if overlay_user and reference.strip():
         user_html = _user_overlay_html(
             message=message,
-            history=history,
-            model_id=model_id.strip() or DEFAULT_MODEL_ID,
-            threshold=risk_threshold,
             reference=reference or "",
         )
     next_display = append_display_turn(display_history, message, assistant_html, user_html=user_html)
