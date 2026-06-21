@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+from html import escape
+
 import gradio as gr
 
-from token_uncertainty.chat_mode import append_assistant, clear_chat_outputs, messages_with_user
+from token_uncertainty.chat_mode import (
+    append_assistant,
+    append_display_turn,
+    clear_chat_outputs,
+    messages_with_user,
+)
 from token_uncertainty.comparison_modes import (
     contrastive_rows,
     render_contrastive_scores,
@@ -20,6 +27,7 @@ from token_uncertainty.nli_attribution import (
     DEFAULT_NLI_MODEL_ID,
     analyze_nli_attribution,
     attribution_rows,
+    render_compact_nli_overlay,
     render_nli_attribution,
 )
 from token_uncertainty.rendering import (
@@ -41,6 +49,74 @@ def _outputs(result, threshold: float):
         sentence_rows(result.sentences),
         token_rows(result.tokens),
     )
+
+
+def _chat_note_html(message: str) -> str:
+    return (
+        "<div style='margin:0 0 8px;padding:8px 10px;border:1px solid #ddd;"
+        "border-left:4px solid #555;border-radius:8px;background:#fafafa;"
+        "font:12px/1.45 system-ui;color:#222'>"
+        f"{escape(message)}"
+        "</div>"
+    )
+
+
+def _history_context(history: list[dict[str, str]] | None) -> str:
+    if not history:
+        return ""
+    lines = [f"{message['role'].title()}: {message['content']}" for message in history]
+    return "\n".join(lines) + "\nUser: "
+
+
+def _candidate_nli_outputs(reference: str, candidate: str) -> tuple[str, str]:
+    attribution = analyze_nli_attribution(
+        reference=reference.strip(),
+        candidate=candidate,
+        model_id=DEFAULT_NLI_MODEL_ID,
+    )
+    return render_compact_nli_overlay(attribution), render_nli_attribution(attribution)
+
+
+def _assistant_overlay_html(result, threshold: float, reference: str) -> tuple[str, str]:
+    if reference.strip():
+        return _candidate_nli_outputs(reference, result.text)
+
+    note = (
+        "No reference/evidence provided. This bubble shows token uncertainty only, "
+        "so it cannot identify exact factual errors."
+    )
+    details = (
+        "<div style='padding:10px 12px;border:1px solid #ddd;border-radius:8px;"
+        "background:#fff;color:#222;font:13px/1.45 system-ui'>"
+        "Paste trusted reference/evidence in the chat tab to enable NLI span shortening "
+        "for the next assistant reply."
+        "</div>"
+    )
+    return _chat_note_html(note) + render_token_overlay(result.tokens, threshold), details
+
+
+def _user_overlay_html(
+    message: str,
+    history: list[dict[str, str]] | None,
+    model_id: str,
+    threshold: float,
+    reference: str,
+) -> str:
+    if reference.strip():
+        overlay, _ = _candidate_nli_outputs(reference, message.strip())
+        note = "User-input NLI overlay. Useful for factual claims; questions often produce noisy NLI comparisons."
+        return _chat_note_html(note) + overlay
+
+    result = analyze_existing_text(
+        text=message.strip(),
+        context=_history_context(history),
+        model_id=model_id,
+    )
+    note = (
+        "User-input token overlay. This scores how surprising your typed text is to the "
+        "scoring model; it is not generation uncertainty."
+    )
+    return _chat_note_html(note) + render_token_overlay(result.tokens, threshold)
 
 
 def run_generation(
@@ -66,11 +142,14 @@ def run_generation(
 def run_chat_turn(
     message: str,
     history: list[dict[str, str]] | None,
+    display_history: list[dict[str, str]] | None,
     model_id: str,
     max_new_tokens: int,
     temperature: float,
     top_p: float,
     risk_threshold: float,
+    reference: str,
+    overlay_user: bool,
 ):
     if not message.strip():
         raise gr.Error("Enter a message.")
@@ -83,7 +162,18 @@ def run_chat_turn(
         top_p=top_p,
     )
     next_history = append_assistant(messages, result.text)
-    return ("", next_history, next_history, *_outputs(result, risk_threshold))
+    assistant_html, nli_html = _assistant_overlay_html(result, risk_threshold, reference or "")
+    user_html = None
+    if overlay_user:
+        user_html = _user_overlay_html(
+            message=message,
+            history=history,
+            model_id=model_id.strip() or DEFAULT_MODEL_ID,
+            threshold=risk_threshold,
+            reference=reference or "",
+        )
+    next_display = append_display_turn(display_history, message, assistant_html, user_html=user_html)
+    return ("", next_display, next_history, next_display, nli_html, *_outputs(result, risk_threshold))
 
 
 def clear_chat():

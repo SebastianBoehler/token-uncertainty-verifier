@@ -104,14 +104,20 @@ def generate_rendered_prompt_with_scores(
 
     prompt_length = inputs["input_ids"].shape[-1]
     generated_ids = outputs.sequences[0][prompt_length:]
+    special_ids = set(getattr(tokenizer, "all_special_ids", []) or [])
     token_scores: list[TokenScore] = []
 
     for token_id_tensor, logits in zip(generated_ids, outputs.scores, strict=False):
         token_id = int(token_id_tensor.item())
+        if token_id in special_ids:
+            continue
+        token_text = tokenizer.decode([token_id], skip_special_tokens=True)
+        if not token_text:
+            continue
         probability, entropy, rank, margin = score_from_logits(logits[0], token_id)
         token_scores.append(
             TokenScore(
-                text=tokenizer.decode([token_id]),
+                text=token_text,
                 token_id=token_id,
                 probability=probability,
                 entropy=entropy,

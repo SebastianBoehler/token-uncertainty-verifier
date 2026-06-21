@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from html import escape
+
 
 ChatMessage = dict[str, str]
 
@@ -12,5 +14,18 @@ def append_assistant(messages: list[ChatMessage], response: str) -> list[ChatMes
     return [*messages, {"role": "assistant", "content": response}]
 
 
+def append_display_turn(
+    display_history: list[ChatMessage] | None,
+    user_message: str,
+    assistant_html: str,
+    user_html: str | None = None,
+) -> list[ChatMessage]:
+    return [
+        *(display_history or []),
+        {"role": "user", "content": user_html if user_html is not None else escape(user_message.strip())},
+        {"role": "assistant", "content": assistant_html},
+    ]
+
+
 def clear_chat_outputs():
-    return "", [], [], "", "", "", [], []
+    return "", [], [], [], "", "", "", "", [], []

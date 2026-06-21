@@ -28,9 +28,9 @@ The project is designed for fast demos, hackathons, and early research workflows
 
 ## What It Shows
 
-The app exposes four separate signals:
+The app exposes several separate workflows:
 
-- **Chat + Overlay**: a normal chat flow where each assistant reply is immediately highlighted with the uncertainty overlay.
+- **Chat + Overlay**: a normal chat flow where each assistant reply is rendered directly as an overlay. Add trusted reference/evidence to switch the bubble from token uncertainty to NLI span shortening. User messages can be overlaid too when you want to inspect a typed factual claim.
 - **Uncertainty overlay**: chosen-token probability, normalized entropy, rank, and margin from the scoring model's next-token distribution.
 - **Diff mode**: deterministic word-level changes between a reference text and a candidate text.
 - **Contrastive scoring**: relative model likelihood for candidate spans in the same sentence template.
@@ -44,7 +44,7 @@ Uncertainty is not factual truth. It reflects what the local scoring model assig
 
 The uncertainty overlay answers: "Which exact words were surprising to this scoring model?" It does not answer: "Which claims are true?"
 
-Chat mode makes that signal easier to experience: ask the model a question, read its answer, then inspect the highlighted assistant turn directly below the conversation.
+Chat mode makes that signal easier to experience: ask the model a question and inspect the highlighted assistant bubble in the conversation. If you paste trusted reference/evidence first, the bubble uses the NLI shortening method to localize disagreement; without reference text, it only shows distribution uncertainty. The optional user-message overlay scores typed text too, but that is input surprisal or reference disagreement, not model-generation uncertainty.
 
 Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide which value is correct.
 
@@ -72,7 +72,7 @@ Current scores are uncertainty and comparison signals, not factual grounding ind
 ## Features
 
 - Gradio UI with generation and pasted-text analysis modes.
-- Chat mode that analyzes each assistant turn as it is generated.
+- Chat mode that renders assistant turns, and optionally user turns, as inline overlays with optional reference-backed NLI span shortening.
 - Word-level overlay that aggregates token pieces and keeps hover tooltips for uncertainty.
 - Raw token score table and CSV for probability, uncertainty, rank, and margin.
 - Sentence-level summary table for scanning high-uncertainty statements.

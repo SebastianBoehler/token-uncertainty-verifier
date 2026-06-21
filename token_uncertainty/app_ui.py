@@ -105,14 +105,30 @@ def create_demo() -> gr.Blocks:
         with gr.Tabs():
             with gr.Tab("Chat + Overlay"):
                 gr.Markdown(
-                    "Chat with the selected model. Each assistant reply is immediately analyzed below. "
-                    "Highlights mark uncertainty signals and verification candidates, not proven falsehoods."
+                    "Chat with the selected model. Each assistant reply is rendered as an inline overlay. "
+                    "With reference/evidence, the bubble uses NLI span shortening; without it, the bubble "
+                    "uses token uncertainty only. Highlights are not proof of factual error."
                 )
                 chat_state = gr.State([])
+                chat_display_state = gr.State([])
                 chatbot = gr.Chatbot(
                     label="Conversation",
                     height=420,
-                    placeholder="Ask a factual question and inspect the highlighted assistant reply below.",
+                    placeholder="Ask a factual question and inspect the highlighted assistant bubble.",
+                    sanitize_html=False,
+                )
+                chat_reference = gr.Textbox(
+                    label="Reference/evidence for NLI shortening (optional)",
+                    lines=3,
+                    placeholder=(
+                        "Paste trusted evidence to localize disagreement. Example: Angela Merkel was "
+                        "born on July 17, 1954, in Hamburg, Germany."
+                    ),
+                )
+                chat_overlay_user = gr.Checkbox(
+                    value=False,
+                    label="Overlay user messages too",
+                    info="Best for user-entered factual claims. Questions can produce noisy NLI or token scores.",
                 )
                 chat_message = gr.Textbox(
                     label="Message",
@@ -126,6 +142,7 @@ def create_demo() -> gr.Blocks:
                 with gr.Row():
                     chat_button = gr.Button("Send and analyze", variant="primary")
                     clear_chat_button = gr.Button("Clear chat", variant="secondary")
+                chat_nli_html = gr.HTML(label="Latest reply NLI span detail")
 
             with gr.Tab("Generate"):
                 prompt = gr.Textbox(value=DEFAULT_PROMPT, label="Prompt", lines=4)
@@ -227,13 +244,16 @@ def create_demo() -> gr.Blocks:
         chat_inputs = [
             chat_message,
             chat_state,
+            chat_display_state,
             model_id,
             chat_max_new_tokens,
             chat_temperature,
             chat_top_p,
             threshold,
+            chat_reference,
+            chat_overlay_user,
         ]
-        chat_outputs = [chat_message, chatbot, chat_state, *outputs]
+        chat_outputs = [chat_message, chatbot, chat_state, chat_display_state, chat_nli_html, *outputs]
         chat_button.click(run_chat_turn, chat_inputs, chat_outputs)
         chat_message.submit(run_chat_turn, chat_inputs, chat_outputs)
         clear_chat_button.click(clear_chat, outputs=chat_outputs)
