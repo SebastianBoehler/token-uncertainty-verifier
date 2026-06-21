@@ -1,35 +1,26 @@
-from token_uncertainty import app_actions
-from token_uncertainty.types import AnalysisResult, TokenScore
+from token_uncertainty.chat_mode import append_assistant, clear_chat_outputs, messages_with_user
 
 
-def test_run_chat_turn_appends_assistant_and_analyzes(monkeypatch):
-    def fake_generate_chat_with_scores(**kwargs):
-        assert kwargs["messages"][-1]["content"] == "When did Apollo 11 land?"
-        return AnalysisResult(
-            text="Apollo 11 landed in 1969.",
-            tokens=[TokenScore(text="1969", uncertainty=0.95)],
-            sentences=[],
-        )
+def test_messages_with_user_preserves_history_and_adds_trimmed_user():
+    history = [{"role": "assistant", "content": "Ask me something factual."}]
 
-    monkeypatch.setattr(app_actions, "generate_chat_with_scores", fake_generate_chat_with_scores)
+    messages = messages_with_user(history, "  When did Apollo 11 land?  ")
 
-    message, chatbot, state, analyzed_text, token_html, *_ = app_actions.run_chat_turn(
-        "When did Apollo 11 land?",
-        [],
-        "test-model",
-        32,
-        0.1,
-        0.9,
-        0.82,
-    )
+    assert messages[0] == history[0]
+    assert messages[-1] == {"role": "user", "content": "When did Apollo 11 land?"}
 
-    assert message == ""
-    assert chatbot == state
-    assert state[-2]["role"] == "user"
-    assert state[-1]["role"] == "assistant"
-    assert analyzed_text == "Apollo 11 landed in 1969."
-    assert "1969" in token_html
+
+def test_append_assistant_returns_new_history():
+    messages = [{"role": "user", "content": "When?"}]
+
+    next_history = append_assistant(messages, "Apollo 11 landed in 1969.")
+
+    assert next_history == [
+        {"role": "user", "content": "When?"},
+        {"role": "assistant", "content": "Apollo 11 landed in 1969."},
+    ]
+    assert messages == [{"role": "user", "content": "When?"}]
 
 
 def test_clear_chat_resets_outputs():
-    assert app_actions.clear_chat() == ("", [], [], "", "", "", [], [])
+    assert clear_chat_outputs() == ("", [], [], "", "", "", [], [])

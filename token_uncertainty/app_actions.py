@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gradio as gr
 
+from token_uncertainty.chat_mode import append_assistant, clear_chat_outputs, messages_with_user
 from token_uncertainty.comparison_modes import (
     contrastive_rows,
     render_contrastive_scores,
@@ -73,8 +74,7 @@ def run_chat_turn(
 ):
     if not message.strip():
         raise gr.Error("Enter a message.")
-    chat_history = list(history or [])
-    messages = [*chat_history, {"role": "user", "content": message.strip()}]
+    messages = messages_with_user(history, message)
     result = generate_chat_with_scores(
         messages=messages,
         model_id=model_id.strip() or DEFAULT_MODEL_ID,
@@ -82,12 +82,12 @@ def run_chat_turn(
         temperature=temperature,
         top_p=top_p,
     )
-    next_history = [*messages, {"role": "assistant", "content": result.text}]
+    next_history = append_assistant(messages, result.text)
     return ("", next_history, next_history, *_outputs(result, risk_threshold))
 
 
 def clear_chat():
-    return "", [], [], "", "", "", [], []
+    return clear_chat_outputs()
 
 
 def run_existing_text(text: str, context: str, model_id: str, risk_threshold: float):
