@@ -13,7 +13,7 @@ python_version: "3.11"
 [![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/sebastianboehler/token-uncertainty-verifier)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Token-level uncertainty, text-diff, contrastive-likelihood, and NLI span-attribution overlays for LLM outputs, built as a small Gradio app and Hugging Face Space.
+Chat-time token uncertainty, text-diff, contrastive-likelihood, and NLI span-attribution overlays for LLM outputs, built as a small Gradio app and Hugging Face Space.
 
 The project is designed for fast demos, hackathons, and early research workflows where you want to inspect factual-looking answers without pretending that model scores are fact checks. It keeps model uncertainty, textual change detection, model-likelihood comparison, and NLI disagreement localization separate from factual truth.
 
@@ -30,6 +30,7 @@ The project is designed for fast demos, hackathons, and early research workflows
 
 The app exposes four separate signals:
 
+- **Chat + Overlay**: a normal chat flow where each assistant reply is immediately highlighted with the uncertainty overlay.
 - **Uncertainty overlay**: chosen-token probability, normalized entropy, rank, and margin from the scoring model's next-token distribution.
 - **Diff mode**: deterministic word-level changes between a reference text and a candidate text.
 - **Contrastive scoring**: relative model likelihood for candidate spans in the same sentence template.
@@ -42,6 +43,8 @@ The most useful mode is pasted-text analysis. You can paste an answer from anoth
 Uncertainty is not factual truth. It reflects what the local scoring model assigns to the next-token distribution after pretraining and post-training: probability mass, entropy, rank, and margin under the provided context. The model can be uncertain about a true statement, confident about a false statement, or unaware of facts that changed after its training unless those facts are provided in context.
 
 The uncertainty overlay answers: "Which exact words were surprising to this scoring model?" It does not answer: "Which claims are true?"
+
+Chat mode makes that signal easier to experience: ask the model a question, read its answer, then inspect the highlighted assistant turn directly below the conversation.
 
 Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide which value is correct.
 
@@ -69,6 +72,7 @@ Current scores are uncertainty and comparison signals, not factual grounding ind
 ## Features
 
 - Gradio UI with generation and pasted-text analysis modes.
+- Chat mode that analyzes each assistant turn as it is generated.
 - Word-level overlay that aggregates token pieces and keeps hover tooltips for uncertainty.
 - Raw token score table and CSV for probability, uncertainty, rank, and margin.
 - Sentence-level summary table for scanning high-uncertainty statements.

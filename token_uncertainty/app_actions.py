@@ -11,6 +11,7 @@ from token_uncertainty.examples import EXAMPLE_CASES, get_example
 from token_uncertainty.model_runner import (
     DEFAULT_MODEL_ID,
     analyze_existing_text,
+    generate_chat_with_scores,
     generate_with_scores,
     score_contrastive_options,
 )
@@ -59,6 +60,34 @@ def run_generation(
         top_p=top_p,
     )
     return _outputs(result, risk_threshold)
+
+
+def run_chat_turn(
+    message: str,
+    history: list[dict[str, str]] | None,
+    model_id: str,
+    max_new_tokens: int,
+    temperature: float,
+    top_p: float,
+    risk_threshold: float,
+):
+    if not message.strip():
+        raise gr.Error("Enter a message.")
+    chat_history = list(history or [])
+    messages = [*chat_history, {"role": "user", "content": message.strip()}]
+    result = generate_chat_with_scores(
+        messages=messages,
+        model_id=model_id.strip() or DEFAULT_MODEL_ID,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        top_p=top_p,
+    )
+    next_history = [*messages, {"role": "assistant", "content": result.text}]
+    return ("", next_history, next_history, *_outputs(result, risk_threshold))
+
+
+def clear_chat():
+    return "", [], [], "", "", "", [], []
 
 
 def run_existing_text(text: str, context: str, model_id: str, risk_threshold: float):

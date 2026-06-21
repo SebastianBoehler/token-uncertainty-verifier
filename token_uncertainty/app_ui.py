@@ -3,6 +3,7 @@ from __future__ import annotations
 import gradio as gr
 
 from token_uncertainty.app_actions import (
+    clear_chat,
     example_note,
     run_contrastive_mode,
     run_diff_mode,
@@ -10,6 +11,7 @@ from token_uncertainty.app_actions import (
     run_example_comparison,
     run_existing_text,
     run_generation,
+    run_chat_turn,
     run_nli_attribution,
 )
 from token_uncertainty.examples import (
@@ -101,6 +103,30 @@ def create_demo() -> gr.Blocks:
             )
 
         with gr.Tabs():
+            with gr.Tab("Chat + Overlay"):
+                gr.Markdown(
+                    "Chat with the selected model. Each assistant reply is immediately analyzed below. "
+                    "Highlights mark uncertainty signals and verification candidates, not proven falsehoods."
+                )
+                chat_state = gr.State([])
+                chatbot = gr.Chatbot(
+                    label="Conversation",
+                    height=420,
+                    placeholder="Ask a factual question and inspect the highlighted assistant reply below.",
+                )
+                chat_message = gr.Textbox(
+                    label="Message",
+                    lines=3,
+                    placeholder="Ask something with specific dates, entities, or claims.",
+                )
+                with gr.Row():
+                    chat_max_new_tokens = gr.Slider(8, 192, value=96, step=1, label="Max tokens")
+                    chat_temperature = gr.Slider(0.0, 1.5, value=0.7, step=0.05, label="Temperature")
+                    chat_top_p = gr.Slider(0.1, 1.0, value=0.95, step=0.01, label="Top-p")
+                with gr.Row():
+                    chat_button = gr.Button("Send and analyze", variant="primary")
+                    clear_chat_button = gr.Button("Clear chat", variant="secondary")
+
             with gr.Tab("Generate"):
                 prompt = gr.Textbox(value=DEFAULT_PROMPT, label="Prompt", lines=4)
                 with gr.Row():
@@ -198,6 +224,20 @@ def create_demo() -> gr.Blocks:
 
         generation_inputs = [prompt, model_id, max_new_tokens, temperature, top_p, threshold]
         outputs = [generated_text, token_html, sentence_html, sentence_table, token_table]
+        chat_inputs = [
+            chat_message,
+            chat_state,
+            model_id,
+            chat_max_new_tokens,
+            chat_temperature,
+            chat_top_p,
+            threshold,
+        ]
+        chat_outputs = [chat_message, chatbot, chat_state, *outputs]
+        chat_button.click(run_chat_turn, chat_inputs, chat_outputs)
+        chat_message.submit(run_chat_turn, chat_inputs, chat_outputs)
+        clear_chat_button.click(clear_chat, outputs=chat_outputs)
+
         generate_button.click(run_generation, generation_inputs, outputs)
         prompt.submit(run_generation, generation_inputs, outputs)
 

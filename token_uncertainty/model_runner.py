@@ -51,6 +51,17 @@ def render_chat_prompt(tokenizer, prompt: str) -> str:
     return prompt
 
 
+def render_chat_messages(tokenizer, messages: list[dict[str, str]]) -> str:
+    if getattr(tokenizer, "chat_template", None):
+        return tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+    lines = [f"{message['role'].title()}: {message['content']}" for message in messages]
+    return "\n".join(lines) + "\nAssistant:"
+
+
 def score_from_logits(logits: torch.Tensor, token_id: int) -> tuple[float, float, int, float]:
     probabilities = torch.softmax(logits.float(), dim=-1)
     chosen_probability = float(probabilities[token_id].item())
@@ -65,8 +76,8 @@ def score_from_logits(logits: torch.Tensor, token_id: int) -> tuple[float, float
     return chosen_probability, normalized_entropy(probabilities), rank, chosen_probability - alternative
 
 
-def generate_with_scores(
-    prompt: str,
+def generate_rendered_prompt_with_scores(
+    rendered_prompt: str,
     model_id: str = DEFAULT_MODEL_ID,
     max_new_tokens: int = 96,
     temperature: float = 0.7,
@@ -74,7 +85,6 @@ def generate_with_scores(
 ) -> AnalysisResult:
     tokenizer, model = load_model(model_id)
     device = next(model.parameters()).device
-    rendered_prompt = render_chat_prompt(tokenizer, prompt)
     inputs = tokenizer(rendered_prompt, return_tensors="pt").to(device)
 
     do_sample = temperature > 0.0
@@ -111,6 +121,40 @@ def generate_with_scores(
         )
 
     return analyze_scored_tokens(token_scores)
+
+
+def generate_with_scores(
+    prompt: str,
+    model_id: str = DEFAULT_MODEL_ID,
+    max_new_tokens: int = 96,
+    temperature: float = 0.7,
+    top_p: float = 0.95,
+) -> AnalysisResult:
+    tokenizer, _ = load_model(model_id)
+    return generate_rendered_prompt_with_scores(
+        rendered_prompt=render_chat_prompt(tokenizer, prompt),
+        model_id=model_id,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        top_p=top_p,
+    )
+
+
+def generate_chat_with_scores(
+    messages: list[dict[str, str]],
+    model_id: str = DEFAULT_MODEL_ID,
+    max_new_tokens: int = 96,
+    temperature: float = 0.7,
+    top_p: float = 0.95,
+) -> AnalysisResult:
+    tokenizer, _ = load_model(model_id)
+    return generate_rendered_prompt_with_scores(
+        rendered_prompt=render_chat_messages(tokenizer, messages),
+        model_id=model_id,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        top_p=top_p,
+    )
 
 
 def analyze_existing_text(
