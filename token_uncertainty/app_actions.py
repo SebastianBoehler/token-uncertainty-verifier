@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from html import escape
-
 import gradio as gr
 
 from token_uncertainty.chat_mode import (
@@ -10,6 +8,7 @@ from token_uncertainty.chat_mode import (
     clear_chat_outputs,
     messages_with_user,
 )
+from token_uncertainty.chat_rendering import render_compact_token_overlay
 from token_uncertainty.comparison_modes import (
     contrastive_rows,
     render_contrastive_scores,
@@ -51,16 +50,6 @@ def _outputs(result, threshold: float):
     )
 
 
-def _chat_note_html(message: str) -> str:
-    return (
-        "<div style='margin:0 0 8px;padding:8px 10px;border:1px solid #ddd;"
-        "border-left:4px solid #555;border-radius:8px;background:#fafafa;"
-        "font:12px/1.45 system-ui;color:#222'>"
-        f"{escape(message)}"
-        "</div>"
-    )
-
-
 def _history_context(history: list[dict[str, str]] | None) -> str:
     if not history:
         return ""
@@ -92,7 +81,7 @@ def _assistant_overlay_html(result, threshold: float, reference: str) -> tuple[s
         "for the next assistant reply."
         "</div>"
     )
-    return _chat_note_html(note) + render_token_overlay(result.tokens, threshold), details
+    return render_compact_token_overlay(result.tokens, threshold, note), details
 
 
 def _user_overlay_html(
@@ -104,8 +93,7 @@ def _user_overlay_html(
 ) -> str:
     if reference.strip():
         overlay, _ = _candidate_nli_outputs(reference, message.strip())
-        note = "User-input NLI overlay. Useful for factual claims; questions often produce noisy NLI comparisons."
-        return _chat_note_html(note) + overlay
+        return overlay
 
     result = analyze_existing_text(
         text=message.strip(),
@@ -116,7 +104,7 @@ def _user_overlay_html(
         "User-input token overlay. This scores how surprising your typed text is to the "
         "scoring model; it is not generation uncertainty."
     )
-    return _chat_note_html(note) + render_token_overlay(result.tokens, threshold)
+    return render_compact_token_overlay(result.tokens, threshold, note)
 
 
 def run_generation(

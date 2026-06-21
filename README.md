@@ -44,7 +44,7 @@ Uncertainty is not factual truth. It reflects what the local scoring model assig
 
 The uncertainty overlay answers: "Which exact words were surprising to this scoring model?" It does not answer: "Which claims are true?"
 
-Chat mode makes that signal easier to experience: ask the model a question and inspect the highlighted assistant bubble in the conversation. If you paste trusted reference/evidence first, the bubble uses the NLI shortening method to localize disagreement; without reference text, it only shows distribution uncertainty. The optional user-message overlay scores typed text too, but that is input surprisal or reference disagreement, not model-generation uncertainty.
+Chat mode makes that signal easier to experience: ask the model a question and inspect the highlighted assistant bubble in the conversation. If you paste trusted reference/evidence first, the bubble uses the NLI shortening method to localize disagreement; without reference text, it only shows distribution uncertainty. Chat bubbles stay compact, with detailed scores in hover text or the dedicated analysis tabs. The optional user-message overlay scores typed text too, but that is input surprisal or reference disagreement, not model-generation uncertainty.
 
 Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide which value is correct.
 

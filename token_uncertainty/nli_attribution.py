@@ -190,22 +190,23 @@ def render_nli_overlay(text: str, rows: list[AttributionRow]) -> str:
 
 
 def render_compact_nli_overlay(result: AttributionResult) -> str:
+    score_title = " | ".join(
+        f"{label}: {result.base_score[label]:.3f}" for label in ("contradiction", "entailment", "neutral")
+    )
+    title = (
+        f"{score_title}. NLI span shortening compares candidate text to reference/evidence; "
+        "it localizes disagreement, not truth by itself."
+    )
     return (
         "<style>"
-        ".uv-chat-nli{display:grid;gap:8px;font:14px/1.9 system-ui;border:1px solid #ddd;"
-        "border-radius:8px;background:#fff;padding:10px;color:#111}"
-        ".uv-chat-nli .uv-nli-text{font-size:16px;line-height:2.05}"
+        ".uv-chat-nli{font:16px/2.05 system-ui;color:#111;white-space:normal}"
         ".uv-chat-nli .uv-nli-word{background:rgba(247,116,75,var(--a));"
         "border:1px solid rgba(169,64,40,calc(var(--a) + .08));border-radius:5px;"
         "padding:1px 3px;margin:0 1px}"
         ".uv-chat-nli .uv-nli-hot{font-weight:760;box-shadow:inset 0 -3px 0 rgba(159,43,31,.72)}"
-        ".uv-chat-nli small{color:#555;font:12px/1.4 system-ui}"
         "</style>"
-        "<div class='uv-chat-nli'>"
-        f"<div class='uv-nli-text'>{render_nli_overlay(result.candidate, result.rows)}</div>"
-        f"<small>{render_score(result.base_score)}. NLI shortening compares this candidate text to the "
-        "reference/evidence; it localizes disagreement, not truth by itself.</small>"
-        "</div>"
+        f"<div class='uv-chat-nli' title='{escape(title, quote=True)}'>"
+        f"{render_nli_overlay(result.candidate, result.rows)}</div>"
     )
 
 

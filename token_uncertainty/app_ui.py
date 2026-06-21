@@ -142,7 +142,7 @@ def create_demo() -> gr.Blocks:
                 with gr.Row():
                     chat_button = gr.Button("Send and analyze", variant="primary")
                     clear_chat_button = gr.Button("Clear chat", variant="secondary")
-                chat_nli_html = gr.HTML(label="Latest reply NLI span detail")
+                chat_nli_html = gr.HTML(label="Latest reply NLI span detail", visible=False)
 
             with gr.Tab("Generate"):
                 prompt = gr.Textbox(value=DEFAULT_PROMPT, label="Prompt", lines=4)
