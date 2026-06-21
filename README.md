@@ -30,7 +30,7 @@ The project is designed for fast demos, hackathons, and early research workflows
 
 The app exposes several separate workflows:
 
-- **Chat + Overlay**: a normal chat flow where each assistant reply is rendered directly as an overlay. Add trusted reference/evidence to switch the bubble from token uncertainty to NLI span shortening. User messages can be overlaid too when you want to inspect a typed factual claim.
+- **Chat + Overlay**: a normal chat flow where each assistant reply is rendered directly as an NLI span overlay against required reference/evidence. User messages can be overlaid too when you want to inspect a typed factual claim.
 - **Uncertainty overlay**: chosen-token probability, normalized entropy, rank, and margin from the scoring model's next-token distribution.
 - **Diff mode**: deterministic word-level changes between a reference text and a candidate text.
 - **Contrastive scoring**: relative model likelihood for candidate spans in the same sentence template.
@@ -50,7 +50,7 @@ Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide wh
 
 Contrastive scoring can say whether the scoring model prefers `1969`, `1972`, or another alternative in the same template. The preferred option is still not guaranteed to be true.
 
-NLI span attribution can localize semantic disagreement, for example showing that `1972` or `Elon Musk` explains why a candidate contradicts a reference. It still does not know which side is true unless the reference is trusted or backed by retrieval.
+NLI span attribution can localize semantic disagreement, for example showing that `Berlin` or `Elon Musk` explains why a paraphrased candidate contradicts a reference. It still does not know which side is true unless the reference is trusted or backed by retrieval.
 
 ## Example Comparisons
 

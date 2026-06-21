@@ -30,7 +30,7 @@ def test_chat_examples_fill_reference_and_message():
     labels = chat_example_labels()
 
     assert len(labels) == len(set(labels))
-    assert "False side sentence" in labels
+    assert {"Capital paraphrase", "Python creator paraphrase", "False side sentence paraphrase"} <= set(labels)
     for label in labels:
         case = get_chat_example(label)
         assert case.reference

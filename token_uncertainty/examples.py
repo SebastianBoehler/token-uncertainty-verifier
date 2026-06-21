@@ -20,8 +20,8 @@ DEFAULT_CANDIDATE_TEXT = (
     "OpenAI released GPT-4 in 2023."
 )
 
-DEFAULT_NLI_REFERENCE_TEXT = "Apollo 11 landed on the Moon in 1969."
-DEFAULT_NLI_CANDIDATE_TEXT = "Apollo 11 landed on the Moon in 1972."
+DEFAULT_NLI_REFERENCE_TEXT = "Paris is the capital and seat of government of France."
+DEFAULT_NLI_CANDIDATE_TEXT = "France has its seat of government in Berlin."
 
 DEFAULT_CONTRASTIVE_TEMPLATE = "Apollo 11 landed on the Moon in {answer}."
 DEFAULT_CONTRASTIVE_OPTIONS = ("1969", "1972", "1970")
@@ -45,28 +45,33 @@ class ChatExample:
 
 CHAT_EXAMPLES = (
     ChatExample(
-        label="False side sentence",
-        reference="Apollo 11 landed on the Moon in 1969. The Eiffel Tower opened in 1889.",
-        message=(
-            "Apollo 11 landed on the Moon in 1969. "
-            "The mission also carried tourists to Mars in 1970. "
-            "The Eiffel Tower opened in 1889."
-        ),
-    ),
-    ChatExample(
-        label="Year-only error",
+        label="Capital paraphrase",
         reference=DEFAULT_NLI_REFERENCE_TEXT,
         message=DEFAULT_NLI_CANDIDATE_TEXT,
     ),
     ChatExample(
-        label="Entity contradiction",
-        reference="Tesla was founded by Martin Eberhard and Marc Tarpenning in 2003.",
-        message="Tesla was founded by Elon Musk in 2003.",
+        label="Python creator paraphrase",
+        reference="Python was created by Guido van Rossum and first released in 1991.",
+        message="First released in 1991, the Python programming language was created by Elon Musk.",
     ),
     ChatExample(
-        label="Correct baseline",
-        reference=DEFAULT_REFERENCE_TEXT,
-        message=DEFAULT_REFERENCE_TEXT,
+        label="False side sentence paraphrase",
+        reference="Apollo 11 landed on the Moon in 1969. The Eiffel Tower opened in 1889.",
+        message=(
+            "After Apollo 11 reached the lunar surface in 1969, "
+            "the crew flew tourists to Mars the next year. "
+            "The Eiffel Tower opened in 1889."
+        ),
+    ),
+    ChatExample(
+        label="Date paraphrase",
+        reference="Apollo 11 landed on the Moon on July 20, 1969.",
+        message="The first Moon landing by Apollo 11 took place in 1972.",
+    ),
+    ChatExample(
+        label="Correct paraphrase",
+        reference="Python was created by Guido van Rossum and first released in 1991.",
+        message="The creator of Python, first released in 1991, was Guido van Rossum.",
     ),
 )
 
