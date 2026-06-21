@@ -2,23 +2,25 @@ from __future__ import annotations
 
 import gradio as gr
 
+from token_uncertainty.app_actions import (
+    example_note,
+    run_contrastive_mode,
+    run_diff_mode,
+    run_example,
+    run_example_comparison,
+    run_existing_text,
+    run_generation,
+)
 from token_uncertainty.examples import (
-    EXAMPLE_CASES,
+    DEFAULT_CANDIDATE_TEXT,
+    DEFAULT_CONTRASTIVE_OPTIONS,
+    DEFAULT_CONTRASTIVE_TEMPLATE,
     DEFAULT_CONTEXT,
+    DEFAULT_REFERENCE_TEXT,
     combined_example_text,
     example_labels,
-    get_example,
 )
-from token_uncertainty.model_runner import DEFAULT_MODEL_ID, analyze_existing_text, generate_with_scores
-from token_uncertainty.rendering import (
-    ComparisonSection,
-    grouped_hot_spans,
-    render_comparison_grid,
-    render_sentence_overlay,
-    render_token_overlay,
-    sentence_rows,
-    token_rows,
-)
+from token_uncertainty.model_runner import DEFAULT_MODEL_ID
 
 SENTENCE_HEADERS = [
     "sentence",
@@ -37,6 +39,15 @@ TOKEN_HEADERS = [
     "margin",
 ]
 
+CONTRASTIVE_HEADERS = [
+    "#",
+    "option",
+    "token_pieces",
+    "geomean_probability",
+    "mean_log_probability",
+    "relative_weight",
+]
+
 DEFAULT_PROMPT = (
     "List three specific scientific or historical claims with dates and sources "
     "in one sentence each."
@@ -49,85 +60,9 @@ DEFAULT_TEXT = (
 UNCERTAINTY_NOTE = (
     "Uncertainty here is a model-distribution signal from token probability, entropy, "
     "rank, and margin. It is not factual truth, and it does not use regex or keyword "
-    "labels. Use highlighted spans as places to inspect first, not as correctness labels."
+    "labels. Diff mode shows textual changes; contrastive mode compares model likelihood. "
+    "None of these modes prove factual correctness."
 )
-
-
-def _outputs(result, threshold: float):
-    return (
-        result.text,
-        render_token_overlay(result.tokens, threshold),
-        render_sentence_overlay(result.sentences),
-        sentence_rows(result.sentences),
-        token_rows(result.tokens),
-    )
-
-
-def run_generation(
-    prompt: str,
-    model_id: str,
-    max_new_tokens: int,
-    temperature: float,
-    top_p: float,
-    risk_threshold: float,
-):
-    if not prompt.strip():
-        raise gr.Error("Enter a prompt.")
-    result = generate_with_scores(
-        prompt=prompt.strip(),
-        model_id=model_id.strip() or DEFAULT_MODEL_ID,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        top_p=top_p,
-    )
-    return _outputs(result, risk_threshold)
-
-
-def run_existing_text(text: str, context: str, model_id: str, risk_threshold: float):
-    if not text.strip():
-        raise gr.Error("Enter text to analyze.")
-    result = analyze_existing_text(
-        text=text,
-        context=context,
-        model_id=model_id.strip() or DEFAULT_MODEL_ID,
-    )
-    return _outputs(result, risk_threshold)
-
-
-def example_note(label: str) -> str:
-    case = get_example(label)
-    return f"**{case.label}**\n\n{case.note}"
-
-
-def run_example(label: str, model_id: str, risk_threshold: float):
-    case = get_example(label)
-    result = analyze_existing_text(
-        text=case.text,
-        context=case.context,
-        model_id=model_id.strip() or DEFAULT_MODEL_ID,
-    )
-    return (case.context, case.text, example_note(label), *_outputs(result, risk_threshold))
-
-
-def run_example_comparison(model_id: str, risk_threshold: float):
-    sections = []
-    for case in EXAMPLE_CASES:
-        result = analyze_existing_text(
-            text=case.text,
-            context=case.context,
-            model_id=model_id.strip() or DEFAULT_MODEL_ID,
-        )
-        sections.append(
-            ComparisonSection(
-                label=case.label,
-                note=case.note,
-                focus=case.focus,
-                hot_spans=grouped_hot_spans(result.tokens, risk_threshold),
-                token_html=render_token_overlay(result.tokens, risk_threshold),
-                sentence_html=render_sentence_overlay(result.sentences),
-            )
-        )
-    return render_comparison_grid(sections)
 
 
 def create_demo() -> gr.Blocks:
@@ -176,6 +111,44 @@ def create_demo() -> gr.Blocks:
                     compare_button = gr.Button("Compare all head-to-head", variant="primary")
                 comparison_html = gr.HTML(label="Head-to-head overlays")
 
+            with gr.Tab("Diff Mode"):
+                with gr.Row():
+                    diff_reference = gr.Textbox(
+                        value=DEFAULT_REFERENCE_TEXT,
+                        label="Reference",
+                        lines=5,
+                    )
+                    diff_candidate = gr.Textbox(
+                        value=DEFAULT_CANDIDATE_TEXT,
+                        label="Candidate",
+                        lines=5,
+                    )
+                diff_button = gr.Button("Compare text changes", variant="primary")
+                diff_html = gr.HTML(label="Word-level diff")
+
+            with gr.Tab("Contrastive"):
+                contrastive_context = gr.Textbox(
+                    value=DEFAULT_CONTEXT,
+                    label="Context",
+                    lines=2,
+                )
+                contrastive_template = gr.Textbox(
+                    value=DEFAULT_CONTRASTIVE_TEMPLATE,
+                    label="Template with {answer}",
+                    lines=2,
+                )
+                contrastive_options = gr.Textbox(
+                    value="\n".join(DEFAULT_CONTRASTIVE_OPTIONS),
+                    label="Alternatives, one per line",
+                    lines=4,
+                )
+                contrastive_button = gr.Button("Score alternatives", variant="primary")
+                contrastive_html = gr.HTML(label="Contrastive likelihood")
+                contrastive_table = gr.Dataframe(
+                    headers=CONTRASTIVE_HEADERS,
+                    label="Alternative scores",
+                )
+
         generated_text = gr.Textbox(label="Analyzed text", lines=8)
         with gr.Tabs():
             with gr.Tab("Word Overlay"):
@@ -207,6 +180,16 @@ def create_demo() -> gr.Blocks:
             run_example_comparison,
             [model_id, threshold],
             comparison_html,
+        )
+        diff_button.click(
+            run_diff_mode,
+            [diff_reference, diff_candidate],
+            diff_html,
+        )
+        contrastive_button.click(
+            run_contrastive_mode,
+            [contrastive_template, contrastive_options, contrastive_context, model_id],
+            [contrastive_html, contrastive_table],
         )
 
     return demo

@@ -13,25 +13,26 @@ python_version: "3.11"
 [![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-yellow)](https://huggingface.co/spaces/sebastianboehler/token-uncertainty-verifier)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Token-level uncertainty overlays for LLM outputs, built as a small Gradio app and Hugging Face Space.
+Token-level uncertainty, text-diff, and contrastive-likelihood overlays for LLM outputs, built as a small Gradio app and Hugging Face Space.
 
-The project is designed for fast demos, hackathons, and early research workflows where you want to see which exact tokens or spans in an answer had low model confidence. It keeps model uncertainty separate from factual truth, so low probability is not treated as proof of hallucination.
+The project is designed for fast demos, hackathons, and early research workflows where you want to inspect factual-looking answers without pretending that token probabilities are fact checks. It keeps model uncertainty, textual change detection, and model-likelihood comparison separate from factual truth.
 
 ## Demo
 
 - Hugging Face Space: <https://huggingface.co/spaces/sebastianboehler/token-uncertainty-verifier>
 - Sample HTML report: [`samples/sample_report.html`](samples/sample_report.html)
+- Diff and contrastive sample: [`samples/sample_comparison_modes.html`](samples/sample_comparison_modes.html)
 - Token score CSV: [`samples/sample_tokens.csv`](samples/sample_tokens.csv)
 - Sentence score CSV: [`samples/sample_sentences.csv`](samples/sample_sentences.csv)
+- Contrastive score CSV: [`samples/sample_contrastive.csv`](samples/sample_contrastive.csv)
 
 ## What It Shows
 
-The app exposes distribution-only uncertainty:
+The app exposes three separate signals:
 
-- chosen-token probability
-- normalized entropy
-- rank of the chosen token
-- margin between the chosen token and the strongest alternative
+- **Uncertainty overlay**: chosen-token probability, normalized entropy, rank, and margin from the scoring model's next-token distribution.
+- **Diff mode**: deterministic word-level changes between a reference text and a candidate text.
+- **Contrastive scoring**: relative model likelihood for candidate spans in the same sentence template.
 
 The most useful mode is pasted-text analysis. You can paste an answer from another model and use a local model to score where that exact text was easy or hard for the scoring model to predict.
 
@@ -39,7 +40,11 @@ The most useful mode is pasted-text analysis. You can paste an answer from anoth
 
 Uncertainty is not factual truth. It reflects what the local scoring model assigns to the next-token distribution after pretraining and post-training: probability mass, entropy, rank, and margin under the provided context. The model can be uncertain about a true statement, confident about a false statement, or unaware of facts that changed after its training unless those facts are provided in context.
 
-The overlay answers: "Which exact tokens were surprising to this scoring model?" It does not answer: "Which claims are true?"
+The uncertainty overlay answers: "Which exact words were surprising to this scoring model?" It does not answer: "Which claims are true?"
+
+Diff mode can expose a changed span like `1969 -> 1972`, but it cannot decide which value is correct.
+
+Contrastive scoring can say whether the scoring model prefers `1969`, `1972`, or another alternative in the same template. The preferred option is still not guaranteed to be true.
 
 ## Example Comparisons
 
@@ -56,7 +61,7 @@ The scenario notes are authored example labels. They are not produced by regex o
 
 This is not a fact checker. It does not prove that a highlighted claim is false.
 
-Current scores are uncertainty signals. A production verifier should add retrieval, source comparison, and domain-specific evidence checks before making truth claims.
+Current scores are uncertainty and comparison signals, not factual grounding indicators. A production verifier should add retrieval, source comparison, and domain-specific evidence checks before making truth claims.
 
 ## Features
 
@@ -65,6 +70,8 @@ Current scores are uncertainty signals. A production verifier should add retriev
 - Raw token score table and CSV for probability, uncertainty, rank, and margin.
 - Sentence-level summary table for scanning high-uncertainty statements.
 - Head-to-head example comparison with authored scenario notes and compact hot-span summaries.
+- Diff mode for direct reference-vs-candidate changes.
+- Contrastive mode for scoring alternatives in a shared template.
 - Sample report generator for reproducible screenshots and CSV artifacts.
 - GitHub Actions CI for tests and smoke checks.
 
@@ -100,8 +107,10 @@ python scripts/generate_samples.py --model-id sshleifer/tiny-gpt2
 This writes multi-scenario comparison outputs:
 
 - `samples/sample_report.html`
+- `samples/sample_comparison_modes.html`
 - `samples/sample_tokens.csv`
 - `samples/sample_sentences.csv`
+- `samples/sample_contrastive.csv`
 
 The sample report renders those scenarios head-to-head so the token and sentence overlays can be compared directly. The goal is to show what distribution uncertainty can and cannot reveal without retrieval.
 
@@ -133,7 +142,9 @@ PY
 ```text
 app.py
 token_uncertainty/
+  app_actions.py   Gradio event handlers
   app_ui.py        Gradio layout and event wiring
+  comparison_modes.py Diff and contrastive rendering
   model_runner.py  Transformers model loading, generation, and text scoring
   scoring.py       Distribution-only uncertainty scoring
   rendering.py     HTML overlays and score tables
@@ -155,7 +166,7 @@ hf upload sebastianboehler/token-uncertainty-verifier . . --repo-type space
 ## Roadmap
 
 - Add retrieval-backed verification against cited sources.
-- Add side-by-side answer comparison with token-level disagreement highlights.
+- Add source-backed span labels that distinguish unsupported, contradicted, and supported text.
 - Add calibrated thresholds per domain and model family.
 - Export overlays as standalone HTML snippets for reports.
 

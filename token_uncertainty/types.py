@@ -29,3 +29,12 @@ class AnalysisResult:
     text: str
     tokens: list[TokenScore]
     sentences: list[SentenceRisk]
+
+
+@dataclass(slots=True)
+class ContrastiveOption:
+    option: str
+    token_count: int
+    mean_log_probability: float
+    geometric_mean_probability: float
+    relative_weight: float = 0.0

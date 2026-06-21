@@ -14,8 +14,21 @@ if str(ROOT) not in sys.path:
 
 from transformers import set_seed
 
-from token_uncertainty.examples import EXAMPLE_CASES, ExampleCase
-from token_uncertainty.model_runner import analyze_existing_text
+from token_uncertainty.comparison_modes import (
+    contrastive_rows,
+    render_contrastive_scores,
+    render_diff,
+)
+from token_uncertainty.examples import (
+    EXAMPLE_CASES,
+    DEFAULT_CANDIDATE_TEXT,
+    DEFAULT_CONTRASTIVE_OPTIONS,
+    DEFAULT_CONTRASTIVE_TEMPLATE,
+    DEFAULT_CONTEXT,
+    DEFAULT_REFERENCE_TEXT,
+    ExampleCase,
+)
+from token_uncertainty.model_runner import analyze_existing_text, score_contrastive_options
 from token_uncertainty.rendering import (
     ComparisonSection,
     grouped_hot_spans,
@@ -82,11 +95,38 @@ def main() -> None:
         token_csv_rows.extend([[case.label, *row] for row in token_rows(result.tokens)])
         sentence_csv_rows.extend([[case.label, *row] for row in sentence_rows(result.sentences)])
 
+    contrastive_scores = score_contrastive_options(
+        template=DEFAULT_CONTRASTIVE_TEMPLATE,
+        options=list(DEFAULT_CONTRASTIVE_OPTIONS),
+        context=DEFAULT_CONTEXT,
+        model_id=args.model_id,
+    )
+
     samples_dir = ROOT / "samples"
     samples_dir.mkdir(exist_ok=True)
     write_report(
         samples_dir / "sample_report.html",
         analyses,
+    )
+    extra_report = samples_dir / "sample_comparison_modes.html"
+    extra_report.write_text(
+        "\n".join(
+            [
+                "<!doctype html>",
+                "<html><head><meta charset='utf-8'><title>Comparison Modes Sample</title>",
+                "<style>body{max-width:1180px;margin:40px auto;font:16px system-ui;color:#111}</style>",
+                "</head><body>",
+                "<h1>Diff and Contrastive Samples</h1>",
+                "<p>These modes compare text and model likelihood; neither mode proves factual truth.</p>",
+                "<p>The generated CI sample may use a tiny model, so rankings are for artifact shape, not accuracy.</p>",
+                "<h2>Diff Mode</h2>",
+                render_diff(DEFAULT_REFERENCE_TEXT, DEFAULT_CANDIDATE_TEXT),
+                "<h2>Contrastive Mode</h2>",
+                render_contrastive_scores(contrastive_scores, DEFAULT_CONTRASTIVE_TEMPLATE),
+                "</body></html>",
+            ]
+        ),
+        encoding="utf-8",
     )
     write_csv(
         samples_dir / "sample_tokens.csv",
@@ -97,6 +137,11 @@ def main() -> None:
         samples_dir / "sample_sentences.csv",
         ["example", "sentence", "text", "uncertainty_score", "mean_uncertainty", "max_token_uncertainty"],
         sentence_csv_rows,
+    )
+    write_csv(
+        samples_dir / "sample_contrastive.csv",
+        ["#", "option", "token_pieces", "geomean_probability", "mean_log_probability", "relative_weight"],
+        contrastive_rows(contrastive_scores),
     )
     print(f"Wrote samples to {samples_dir}")
 

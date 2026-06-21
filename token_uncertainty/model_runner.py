@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
+import math
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from token_uncertainty.scoring import analyze_scored_tokens, normalized_entropy
-from token_uncertainty.types import AnalysisResult, TokenScore
+from token_uncertainty.types import AnalysisResult, ContrastiveOption, TokenScore
 
 DEFAULT_MODEL_ID = os.getenv("MODEL_ID", "HuggingFaceTB/SmolLM2-135M-Instruct")
 
@@ -155,3 +156,65 @@ def analyze_existing_text(
         )
 
     return analyze_scored_tokens(token_scores)
+
+
+def score_contrastive_options(
+    template: str,
+    options: list[str],
+    context: str = "",
+    model_id: str = DEFAULT_MODEL_ID,
+) -> list[ContrastiveOption]:
+    if "{answer}" not in template:
+        raise ValueError("Template must contain {answer}.")
+
+    prefix, _ = template.split("{answer}", 1)
+    clean_options = [option.strip() for option in options if option.strip()]
+    if not clean_options:
+        return []
+
+    tokenizer, model = load_model(model_id)
+    device = next(model.parameters()).device
+    prompt = f"{context.strip()}\n{prefix}" if context.strip() else prefix
+    prefix_ids = tokenizer.encode(prompt, add_special_tokens=False)
+    bos = []
+    if not prefix_ids and tokenizer.bos_token_id is not None:
+        bos = [tokenizer.bos_token_id]
+
+    scored = []
+    for option in clean_options:
+        option_ids = tokenizer.encode(option, add_special_tokens=False)
+        if not option_ids:
+            continue
+
+        all_ids = bos + prefix_ids + option_ids
+        target_start = len(bos) + len(prefix_ids)
+        input_ids = torch.tensor([all_ids], dtype=torch.long, device=device)
+
+        with torch.inference_mode():
+            logits = model(input_ids=input_ids).logits[0]
+
+        log_probabilities = []
+        for position in range(target_start, len(all_ids)):
+            probability, _, _, _ = score_from_logits(logits[position - 1], all_ids[position])
+            log_probabilities.append(math.log(max(probability, 1e-12)))
+
+        mean_log_probability = sum(log_probabilities) / len(log_probabilities)
+        scored.append(
+            ContrastiveOption(
+                option=option,
+                token_count=len(option_ids),
+                mean_log_probability=mean_log_probability,
+                geometric_mean_probability=math.exp(mean_log_probability),
+            )
+        )
+
+    if not scored:
+        return []
+
+    best = max(item.mean_log_probability for item in scored)
+    weights = [math.exp(item.mean_log_probability - best) for item in scored]
+    total = sum(weights)
+    for item, weight in zip(scored, weights, strict=False):
+        item.relative_weight = weight / total if total else 0.0
+
+    return sorted(scored, key=lambda item: item.mean_log_probability, reverse=True)

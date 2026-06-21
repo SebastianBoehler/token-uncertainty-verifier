@@ -8,6 +8,21 @@ DEFAULT_CONTEXT = (
     "uncertainty only; it does not prove truth or falsehood."
 )
 
+DEFAULT_REFERENCE_TEXT = (
+    "Apollo 11 landed on the Moon in 1969. "
+    "The Eiffel Tower opened in 1889. "
+    "OpenAI released GPT-4 in 2023."
+)
+
+DEFAULT_CANDIDATE_TEXT = (
+    "Apollo 11 landed on the Moon in 1972. "
+    "The Eiffel Tower opened in 1889. "
+    "OpenAI released GPT-4 in 2023."
+)
+
+DEFAULT_CONTRASTIVE_TEMPLATE = "Apollo 11 landed on the Moon in {answer}."
+DEFAULT_CONTRASTIVE_OPTIONS = ("1969", "1972", "1970")
+
 
 @dataclass(frozen=True)
 class ExampleCase:
