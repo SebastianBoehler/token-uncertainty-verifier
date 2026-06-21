@@ -92,6 +92,34 @@ def render_sentence_overlay(sentences: list[SentenceRisk]) -> str:
     )
 
 
+def render_comparison_grid(sections: list[tuple[str, str, str, str]]) -> str:
+    cards = []
+    for label, note, token_html, sentence_html in sections:
+        cards.append(
+            "<section class='uv-compare-card'>"
+            f"<h3>{escape(label)}</h3>"
+            f"<p>{escape(note)}</p>"
+            "<h4>Tokens</h4>"
+            f"{token_html}"
+            "<h4>Sentences</h4>"
+            f"{sentence_html}"
+            "</section>"
+        )
+    return (
+        "<style>"
+        ".uv-compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));"
+        "gap:14px;align-items:start}"
+        ".uv-compare-card{border:1px solid #ddd;border-radius:8px;padding:12px;background:#fff;color:#111}"
+        ".uv-compare-card h3{margin:0 0 6px;font:600 16px system-ui}"
+        ".uv-compare-card h4{margin:12px 0 6px;font:600 13px system-ui;color:#333}"
+        ".uv-compare-card p{font:13px/1.45 system-ui;color:#333;margin:0 0 8px}"
+        ".uv-compare-card .uv-overlay{font-size:13px;line-height:1.85;padding:10px}"
+        ".uv-compare-card .uv-sentence{padding:8px 10px}"
+        "</style>"
+        f"<div class='uv-compare-grid'>{''.join(cards) or 'No comparisons to display.'}</div>"
+    )
+
+
 def token_rows(tokens: list[TokenScore]) -> list[list[str | int | float]]:
     rows: list[list[str | int | float]] = []
     for index, token in enumerate(tokens, start=1):

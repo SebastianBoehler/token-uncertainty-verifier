@@ -2,9 +2,16 @@ from __future__ import annotations
 
 import gradio as gr
 
-from token_uncertainty.examples import DEFAULT_CONTEXT, combined_example_text, example_labels, get_example
+from token_uncertainty.examples import (
+    EXAMPLE_CASES,
+    DEFAULT_CONTEXT,
+    combined_example_text,
+    example_labels,
+    get_example,
+)
 from token_uncertainty.model_runner import DEFAULT_MODEL_ID, analyze_existing_text, generate_with_scores
 from token_uncertainty.rendering import (
+    render_comparison_grid,
     render_sentence_overlay,
     render_token_overlay,
     sentence_rows,
@@ -103,6 +110,25 @@ def run_example(label: str, model_id: str, risk_threshold: float):
     return (case.context, case.text, example_note(label), *_outputs(result, risk_threshold))
 
 
+def run_example_comparison(model_id: str, risk_threshold: float):
+    sections = []
+    for case in EXAMPLE_CASES:
+        result = analyze_existing_text(
+            text=case.text,
+            context=case.context,
+            model_id=model_id.strip() or DEFAULT_MODEL_ID,
+        )
+        sections.append(
+            (
+                case.label,
+                case.note,
+                render_token_overlay(result.tokens, risk_threshold),
+                render_sentence_overlay(result.sentences),
+            )
+        )
+    return render_comparison_grid(sections)
+
+
 def create_demo() -> gr.Blocks:
     with gr.Blocks(title="Token Uncertainty Verifier") as demo:
         gr.Markdown(
@@ -143,7 +169,10 @@ def create_demo() -> gr.Blocks:
                     label="Scenario",
                 )
                 example_details = gr.Markdown(value=example_note(example_labels()[0]))
-                example_button = gr.Button("Analyze example", variant="primary")
+                with gr.Row():
+                    example_button = gr.Button("Analyze selected", variant="secondary")
+                    compare_button = gr.Button("Compare all head-to-head", variant="primary")
+                comparison_html = gr.HTML(label="Head-to-head overlays")
 
         generated_text = gr.Textbox(label="Analyzed text", lines=8)
         with gr.Tabs():
@@ -171,6 +200,11 @@ def create_demo() -> gr.Blocks:
             run_example,
             [example_choice, model_id, threshold],
             [context, existing_text, example_details, *outputs],
+        )
+        compare_button.click(
+            run_example_comparison,
+            [model_id, threshold],
+            comparison_html,
         )
 
     return demo

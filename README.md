@@ -41,7 +41,7 @@ The factual-risk score is therefore a triage signal. It combines model uncertain
 
 ## Example Comparisons
 
-The Gradio app includes an **Examples** tab with four scenario overlays:
+The Gradio app includes an **Examples** tab with a head-to-head overlay grid for four scenarios:
 
 - **Correct baseline**: known factual claims still highlight dates and entities because they are verification-worthy.
 - **Year-only error**: a wrong year is marked as a risky date-bearing claim, but the overlay alone cannot know it is false.
@@ -98,7 +98,7 @@ This writes multi-scenario comparison outputs:
 - `samples/sample_tokens.csv`
 - `samples/sample_sentences.csv`
 
-The sample report intentionally contrasts correct, wrong-year, contradictory, and side-claim variants. The goal is to show what the overlay can and cannot flag without retrieval.
+The sample report renders those scenarios head-to-head so the token and sentence overlays can be compared directly. The goal is to show what the overlay can and cannot flag without retrieval.
 
 ## Development
 

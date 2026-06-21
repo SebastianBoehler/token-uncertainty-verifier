@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import csv
 import os
-from html import escape
 from pathlib import Path
 import sys
 
@@ -18,6 +17,7 @@ from transformers import set_seed
 from token_uncertainty.examples import EXAMPLE_CASES, ExampleCase
 from token_uncertainty.model_runner import analyze_existing_text
 from token_uncertainty.rendering import (
+    render_comparison_grid,
     render_sentence_overlay,
     render_token_overlay,
     sentence_rows,
@@ -34,32 +34,17 @@ def write_csv(path: Path, headers: list[str], rows: list[list[object]]) -> None:
 
 
 def write_report(path: Path, analyses: list[tuple[ExampleCase, AnalysisResult, str, str]]) -> None:
-    sections = []
-    for case, result, token_html, sentence_html in analyses:
-        sections.extend(
-            [
-                f"<section><h2>{escape(case.label)}</h2>",
-                f"<p>{escape(case.note)}</p>",
-                f"<pre>{escape(result.text)}</pre>",
-                "<h3>Token Overlay</h3>",
-                token_html,
-                "<h3>Sentence Overlay</h3>",
-                sentence_html,
-                "</section>",
-            ]
-        )
-
+    sections = [(case.label, case.note, token_html, sentence_html) for case, _, token_html, sentence_html in analyses]
     path.write_text(
         "\n".join(
             [
                 "<!doctype html>",
                 "<html><head><meta charset='utf-8'><title>Token Uncertainty Sample</title>",
-                "<style>body{max-width:1040px;margin:40px auto;font:16px system-ui;color:#111}"
-                "section{margin:0 0 42px}pre{white-space:pre-wrap}</style>",
+                "<style>body{max-width:1280px;margin:40px auto;font:16px system-ui;color:#111}</style>",
                 "</head><body>",
-                "<h1>Token Uncertainty Example Comparisons</h1>",
+                "<h1>Token Uncertainty Head-to-Head Comparisons</h1>",
                 "<p>These examples show verification-priority signals, not proof of truth.</p>",
-                *sections,
+                render_comparison_grid(sections),
                 "</body></html>",
             ]
         ),
